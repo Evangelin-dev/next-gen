@@ -1,5 +1,13 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## API configuration
+
+Copy `.env.example` to `.env.local` for local development and set `API_BASE_URL` to the CRM backend origin, for example `http://127.0.0.1:8000`. Axios calls the Next.js server proxy, which forwards contact details to `/api/interests/` and questionnaire answers to `/api/interests/<id>/`.
+
+For deployment, configure `API_BASE_URL` in the hosting provider. The backend URL is now used by the server proxy, so the browser no longer needs CRM CORS configuration.
+
+Restart the Next.js dev server after changing `.env` values.
+
 ## Getting Started
 
 First, run the development server:
