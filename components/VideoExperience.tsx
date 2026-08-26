@@ -225,7 +225,15 @@ export default function VideoExperience() {
           <p className="modal-kicker">YOUR EXPORT GROWTH PLAN</p>
           <h1>Here&apos;s How Factories Can Build A Reliable Export Pipeline</h1>
           <p>Watch the video below to see how the guaranteed marketing funnel works.</p>
-          <div className="video-frame"><div className="play-icon" aria-hidden="true">▶</div><span>Your video will appear here</span></div>
+          <div className="video-frame">
+            <video
+              controls
+              playsInline
+              preload="metadata"
+              src="https://bot-portal-bucket-2026.s3.ap-south-1.amazonaws.com/Full+VID.mp4"
+              aria-label="The Bot Agency export growth plan video"
+            />
+          </div>
           <div className={`apply-reveal ${isApplyVisible ? "is-visible" : ""}`}>
             <button className="primary-button apply-button" onClick={openApplication}>APPLY NOW <span aria-hidden="true">→</span></button>
           </div>
