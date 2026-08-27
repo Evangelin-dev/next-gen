@@ -150,6 +150,9 @@ export default function VideoExperience() {
 
   async function completeOrAdvance(updatedAnswers: Record<string, string>) {
     if (questionIndex === questions.length - 1) {
+      const roleQualified = localStorage.getItem("isQualified") !== "false";
+      const isQualified = roleQualified
+        && updatedAnswers[questions[questions.length - 1].title] !== "Not looking to invest right now";
       const interestId = localStorage.getItem("interestId");
       if (!interestId) {
         setSaveError("We could not find your application. Please return and submit your details again.");
@@ -160,6 +163,7 @@ export default function VideoExperience() {
       try {
         await apiClient.patch(`/interests/${interestId}`, {
           questionnaire_data: updatedAnswers,
+          is_qualified: isQualified,
         });
         setIsComplete(true);
       } catch (requestError) {
@@ -221,7 +225,7 @@ export default function VideoExperience() {
     <main className={`video-page ${isApplicationOpen ? "application-mode" : ""}`}>
       {!isApplicationOpen && (
         <section className="video-content">
-          <div className="brand-mark" aria-label="The Bot Agency">The Bot Agency</div>
+          <div className="brand-mark" aria-label="The Bot">The Bot</div>
           <p className="modal-kicker">YOUR EXPORT GROWTH PLAN</p>
           <h1>Here&apos;s How Factories Can Build A Reliable Export Pipeline</h1>
           <p>Watch the video below to see how the guaranteed marketing funnel works.</p>
@@ -231,7 +235,11 @@ export default function VideoExperience() {
               playsInline
               preload="metadata"
               src="https://bot-portal-bucket-2026.s3.ap-south-1.amazonaws.com/Full+VID.mp4"
-              aria-label="The Bot Agency export growth plan video"
+              aria-label="The Bot export growth plan video"
+              onEnded={() => {
+                setIsApplyVisible(true);
+                openApplication();
+              }}
             />
           </div>
           <div className={`apply-reveal ${isApplyVisible ? "is-visible" : ""}`}>
@@ -244,7 +252,7 @@ export default function VideoExperience() {
         <section className="application-shell" aria-labelledby="application-title">
           <div className="application-topline" />
           <p className="modal-kicker">MANUFACTURER GROWTH PARTNER — QUALIFICATION</p>
-          <h1 id="application-title">Fill Out This Short Application Now</h1>
+          {!isComplete && <h1 id="application-title">Fill Out This Short Application Now</h1>}
           {!isComplete ? (
             <div className={`question-card ${isChanging ? "is-changing" : ""}`} ref={questionRef} tabIndex={-1}>
               <div className="question-meta"><span>{questionIndex + 1}</span><strong>of {questions.length}</strong></div>
