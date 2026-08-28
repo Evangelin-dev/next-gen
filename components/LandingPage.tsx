@@ -29,9 +29,11 @@ export default function LandingPage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!role || isSubmitting) {
+    if (!role || !phone || isSubmitting) {
       if (!role) {
         setError("Please choose an option to continue.");
+      } else if (!phone) {
+        setError("Please enter your phone number to continue.");
       }
       return;
     }
@@ -100,7 +102,7 @@ export default function LandingPage() {
               <div className="form-grid">
                 <label><span>First name *</span><input name="firstName" type="text" placeholder="Enter your first name" required /></label>
                 <label><span>Work email *</span><input name="email" type="email" placeholder="Enter your work email" required /></label>
-                <label><span>Phone number</span><PhoneInput name="phone" defaultCountry="IN" value={phone} onChange={setPhone} placeholder="Enter your phone number" /></label>
+                <label><span>Phone number *</span><PhoneInput name="phone" required defaultCountry="IN" value={phone} onChange={setPhone} placeholder="Enter your phone number" /></label>
                 <label>
                   <span>Please describe what you do currently? *</span>
                     <select value={role} onChange={(event) => {
