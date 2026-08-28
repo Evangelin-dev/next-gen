@@ -73,6 +73,7 @@ export default function VideoExperience() {
   const [selectedOption, setSelectedOption] = useState("");
   const [isChanging, setIsChanging] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const [canSchedule, setCanSchedule] = useState(false);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [saveError, setSaveError] = useState("");
   const [selectedDate, setSelectedDate] = useState(getTodayInCalendarTimezone);
@@ -97,7 +98,7 @@ export default function VideoExperience() {
   }, [isApplicationOpen, questionIndex]);
 
   useEffect(() => {
-    if (!isComplete) return;
+    if (!isComplete || !canSchedule) return;
 
     async function loadAvailability() {
       setIsLoadingSlots(true);
@@ -120,13 +121,14 @@ export default function VideoExperience() {
     }
 
     void loadAvailability();
-  }, [isComplete, selectedDate]);
+  }, [canSchedule, isComplete, selectedDate]);
 
   function openApplication() {
     setIsApplicationOpen(true);
     setQuestionIndex(0);
     setSelectedOption("");
     setIsComplete(false);
+    setCanSchedule(false);
     setAnswers({});
     setSaveError("");
     setBooking(null);
@@ -165,6 +167,7 @@ export default function VideoExperience() {
           questionnaire_data: updatedAnswers,
           is_qualified: isQualified,
         });
+        setCanSchedule(isQualified);
         setIsComplete(true);
       } catch (requestError) {
         const detail = axios.isAxiosError(requestError)
@@ -281,7 +284,13 @@ export default function VideoExperience() {
             <div className="calendly-placeholder">
               <div className="success-mark">✓</div>
               <p className="modal-kicker">APPLICATION COMPLETE</p>
-              {booking ? (
+              {!canSchedule ? (
+                <>
+                  <h2>Thanks for completing the application.</h2>
+                  <p>We&apos;re unable to schedule a meeting at this time.</p>
+                  <button className="secondary-button" onClick={() => setIsApplicationOpen(false)}>WATCH THE VIDEO AGAIN <span aria-hidden="true">→</span></button>
+                </>
+              ) : booking ? (
                 <>
                   <h2>Your call is booked.</h2>
                   <p>Google Calendar sent the meeting invite to your email.</p>
