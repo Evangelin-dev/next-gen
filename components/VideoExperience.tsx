@@ -194,6 +194,10 @@ export default function VideoExperience() {
         end_time: selectedSlot.end,
         timezone: "Asia/Kolkata",
       });
+      await apiClient.patch(`/interests/${interestId}/update`, {
+        meeting_date: response.data.start_time || selectedSlot.start,
+        status: "meeting_booked",
+      });
       setBooking(response.data);
     } catch (requestError) {
       const status = axios.isAxiosError(requestError) ? requestError.response?.status : undefined;
