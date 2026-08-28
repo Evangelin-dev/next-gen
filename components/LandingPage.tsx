@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import axios from "axios";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
@@ -69,7 +70,7 @@ export default function LandingPage() {
   return (
     <main className="landing-shell">
       <section className="hero-section">
-        <div className="brand-mark" aria-label="The Bot">The Bot</div>
+        <Image className="brand-mark" src="/BOT_BLACK.png" alt="The Bot" width={652} height={652} priority />
         <div className="hero-content">
           <p className="eyebrow">FOR FACTORY OWNERS ONLY</p>
           <h1>Get 10 Export Enquiries Every Month</h1>
