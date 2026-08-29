@@ -6,6 +6,7 @@ import axios from "axios";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import apiClient from "../lib/api";
+import { trackFacebookEvent } from "../lib/facebookPixel";
 
 type CalendarSlot = {
   start: string;
@@ -16,6 +17,10 @@ type BookingResponse = {
   meet_link?: string;
   start_time?: string;
 };
+
+const WHATSAPP_NUMBER = "919892969648";
+const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi, my meeting has been booked. Please confirm the details.")}`;
+const BUSINESS_URL = process.env.NEXT_PUBLIC_BUSINESS_URL || "https://thebotagency.com";
 
 const roleOptions = [
   "Factory owner",
@@ -85,6 +90,19 @@ export default function DirectScheduler({ initialInterestId }: DirectSchedulerPr
     void loadAvailability();
   }, [selectedDate, stage]);
 
+  useEffect(() => {
+    if (!booking) return;
+
+    trackFacebookEvent("WhatsAppContact", {
+      content_name: "Post-booking WhatsApp handoff",
+      content_category: "whatsapp",
+      value: 1,
+      currency: "INR",
+    });
+    window.open(WHATSAPP_URL, "_blank", "noopener,noreferrer");
+    window.open(BUSINESS_URL, "_blank", "noopener,noreferrer");
+  }, [booking]);
+
   async function handleDetailsSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!phone || isSubmitting) {
@@ -146,6 +164,12 @@ export default function DirectScheduler({ initialInterestId }: DirectSchedulerPr
         status: isRescheduling ? "meeting_rescheduled" : "meeting_booked",
       });
       setBooking(response.data);
+      trackFacebookEvent("Schedule", {
+        content_name: "Direct scheduler booking",
+        content_category: "booking",
+        value: 1,
+        currency: "INR",
+      });
       setStage("complete");
     } catch (requestError) {
       setError(axios.isAxiosError(requestError) && requestError.response?.status === 409
@@ -201,7 +225,16 @@ export default function DirectScheduler({ initialInterestId }: DirectSchedulerPr
           <div className="schedule-result"><div className="success-mark">✓</div><p className="modal-kicker">DETAILS RECEIVED</p><h1>Thanks for your interest.</h1><p>We&apos;re unable to schedule a meeting at this time.</p></div>
         )}
         {stage === "complete" && booking && (
-          <div className="schedule-result"><div className="success-mark">✓</div><p className="modal-kicker">{isRescheduling ? "CALL RESCHEDULED" : "CALL BOOKED"}</p><h1>{isRescheduling ? "Your call has been rescheduled." : "Your call is booked."}</h1><p>The meeting invite has been sent to your email.</p>{booking.meet_link && <a className="meet-link" href={booking.meet_link} target="_blank" rel="noreferrer">Join Google Meet <span aria-hidden="true">→</span></a>}</div>
+          <div className="schedule-result">
+            <div className="success-mark">✓</div>
+            <p className="modal-kicker">{isRescheduling ? "CALL RESCHEDULED" : "CALL BOOKED"}</p>
+            <h1>{isRescheduling ? "Your call has been rescheduled." : "Your call is booked."}</h1>
+            <p>The meeting invite has been sent to your email. We will continue on WhatsApp and our business page.</p>
+            <div className="cta-stack">
+              <a className="meet-link" href={WHATSAPP_URL} target="_blank" rel="noreferrer">Open WhatsApp <span aria-hidden="true">→</span></a>
+              <a className="secondary-button" href={BUSINESS_URL} target="_blank" rel="noreferrer">Visit Business Page <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
         )}
       </section>
     </main>

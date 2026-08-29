@@ -3,6 +3,7 @@
 import { KeyboardEvent, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import apiClient from "../lib/api";
+import { trackFacebookEvent } from "../lib/facebookPixel";
 
 type Question = {
   title: string;
@@ -13,6 +14,10 @@ type CalendarSlot = {
   start: string;
   end: string;
 };
+
+const WHATSAPP_NUMBER = "919892969648";
+const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi, my meeting has been booked. Please confirm the details.")}`;
+const BUSINESS_URL = process.env.NEXT_PUBLIC_BUSINESS_URL || "https://thebotagency.com";
 
 function getTodayInCalendarTimezone() {
   return new Intl.DateTimeFormat("en-CA", {
@@ -123,6 +128,19 @@ export default function VideoExperience() {
     void loadAvailability();
   }, [canSchedule, isComplete, selectedDate]);
 
+  useEffect(() => {
+    if (!booking) return;
+
+    trackFacebookEvent("WhatsAppContact", {
+      content_name: "Post-booking WhatsApp handoff",
+      content_category: "whatsapp",
+      value: 1,
+      currency: "INR",
+    });
+    window.open(WHATSAPP_URL, "_blank", "noopener,noreferrer");
+    window.open(BUSINESS_URL, "_blank", "noopener,noreferrer");
+  }, [booking]);
+
   function openApplication() {
     setIsApplicationOpen(true);
     setQuestionIndex(0);
@@ -169,6 +187,12 @@ export default function VideoExperience() {
         });
         setCanSchedule(isQualified);
         setIsComplete(true);
+        trackFacebookEvent("VideoCompletion", {
+          content_name: "Application video completion",
+          content_category: "qualification",
+          value: isQualified ? 1 : 0,
+          currency: "INR",
+        });
       } catch (requestError) {
         const detail = axios.isAxiosError(requestError)
           && requestError.response?.data?.detail;
@@ -197,6 +221,12 @@ export default function VideoExperience() {
       await apiClient.patch(`/interests/${interestId}/update`, {
         meeting_date: response.data.start_time || selectedSlot.start,
         status: "meeting_booked",
+      });
+      trackFacebookEvent("Schedule", {
+        content_name: "Booked growth call",
+        content_category: "booking",
+        value: 1,
+        currency: "INR",
       });
       setBooking(response.data);
     } catch (requestError) {
@@ -246,6 +276,12 @@ export default function VideoExperience() {
               onEnded={() => {
                 setIsApplyVisible(true);
                 openApplication();
+                trackFacebookEvent("VideoCompletion", {
+                  content_name: "Landing page video completion",
+                  content_category: "video",
+                  value: 1,
+                  currency: "INR",
+                });
               }}
             />
           </div>
@@ -297,8 +333,11 @@ export default function VideoExperience() {
               ) : booking ? (
                 <>
                   <h2>Your call is booked.</h2>
-                  <p>Google Calendar sent the meeting invite to your email.</p>
-                  {booking.meet_link && <a className="meet-link" href={booking.meet_link} target="_blank" rel="noreferrer">Join Google Meet <span aria-hidden="true">→</span></a>}
+                  <p>The meeting invite has been sent to your email. We will continue on WhatsApp and our business page.</p>
+                  <div className="cta-stack">
+                    <a className="meet-link" href={WHATSAPP_URL} target="_blank" rel="noreferrer">Open WhatsApp <span aria-hidden="true">→</span></a>
+                    <a className="secondary-button" href={BUSINESS_URL} target="_blank" rel="noreferrer">Visit Business Page <span aria-hidden="true">→</span></a>
+                  </div>
                 </>
               ) : (
                 <>

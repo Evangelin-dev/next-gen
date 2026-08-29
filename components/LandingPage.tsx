@@ -7,6 +7,7 @@ import axios from "axios";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import apiClient from "../lib/api";
+import { trackFacebookEvent } from "../lib/facebookPixel";
 
 const roleOptions = [
   "Factory owner",
@@ -55,6 +56,12 @@ export default function LandingPage() {
       const { data } = await apiClient.post<{ id: string }>("/interests", payload);
       localStorage.setItem("interestId", data.id);
       localStorage.setItem("isQualified", String(isQualified));
+      trackFacebookEvent("Lead", {
+        content_name: "Landing page form submit",
+        content_category: "lead_capture",
+        value: 1,
+        currency: "INR",
+      });
       router.push("/video");
     } catch (requestError) {
       if (axios.isAxiosError(requestError) && !requestError.response) {
