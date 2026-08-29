@@ -70,7 +70,7 @@ export default function LandingPage() {
   return (
     <main className="landing-shell">
       <section className="hero-section">
-        <Image className="brand-mark" src="/BOT_BLACK.png" alt="The Bot" width={652} height={652} priority />
+        <Image className="brand-mark" src="/logo.png" alt="The Bot" width={652} height={652} priority />
         <div className="hero-content">
           <p className="eyebrow">FOR FACTORY OWNERS ONLY</p>
           <h1>Get 10 Export Enquiries Every Month</h1>

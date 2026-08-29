@@ -168,7 +168,7 @@ export default function DirectScheduler({ initialInterestId }: DirectSchedulerPr
   return (
     <main className="schedule-page">
       <section className="schedule-shell">
-        <Image className="schedule-logo" src="/BOT_BLACK.png" alt="The Bot" width={512} height={512} priority />
+        <Image className="schedule-logo" src="/logo.png" alt="The Bot" width={512} height={512} priority />
         {stage === "form" && (
           <>
             <p className="modal-kicker">{isRescheduling ? "RESCHEDULE YOUR CALL" : "BOOK YOUR GROWTH CALL"}</p>
