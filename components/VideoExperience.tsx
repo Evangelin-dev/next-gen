@@ -1,6 +1,7 @@
 "use client";
 
 import { KeyboardEvent, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import axios from "axios";
 import apiClient from "../lib/api";
 import { trackFacebookEvent } from "../lib/facebookPixel";
@@ -142,6 +143,7 @@ export default function VideoExperience() {
   }, [booking]);
 
   function openApplication() {
+    localStorage.removeItem("isQualified");
     setIsApplicationOpen(true);
     setQuestionIndex(0);
     setSelectedOption("");
@@ -181,6 +183,7 @@ export default function VideoExperience() {
       }
 
       try {
+        localStorage.setItem("isQualified", String(isQualified));
         await apiClient.patch(`/interests/${interestId}`, {
           questionnaire_data: updatedAnswers,
           is_qualified: isQualified,
@@ -218,9 +221,11 @@ export default function VideoExperience() {
         end_time: selectedSlot.end,
         timezone: "Asia/Kolkata",
       });
+      localStorage.setItem("isQualified", "true");
       await apiClient.patch(`/interests/${interestId}/update`, {
         meeting_date: response.data.start_time || selectedSlot.start,
         status: "meeting_booked",
+        is_qualified: true,
       });
       trackFacebookEvent("Schedule", {
         content_name: "Booked growth call",
@@ -256,13 +261,29 @@ export default function VideoExperience() {
     }
   }
 
+  function goBackToLanding() {
+    setIsApplicationOpen(false);
+    setQuestionIndex(0);
+    setSelectedOption("");
+    setIsComplete(false);
+    setCanSchedule(false);
+    setAnswers({});
+    setSaveError("");
+    setBooking(null);
+    setSelectedDate(getTodayInCalendarTimezone());
+    setAvailableSlots([]);
+    setCalendarError("");
+    setSelectedSlot(null);
+    setIsApplyVisible(true);
+  }
+
   const question = questions[questionIndex];
 
   return (
     <main className={`video-page ${isApplicationOpen ? "application-mode" : ""}`}>
       {!isApplicationOpen && (
         <section className="video-content">
-          <div className="brand-mark" aria-label="The Bot">The Bot</div>
+          <Image className="brand-mark" src="/BOT_BLACK.png" alt="The Bot" width={652} height={652} priority />
           <p className="modal-kicker">YOUR EXPORT GROWTH PLAN</p>
           <h1>Here&apos;s How Factories Can Build A Reliable Export Pipeline</h1>
           <p>Watch the video below to see how the guaranteed marketing funnel works.</p>
@@ -294,6 +315,9 @@ export default function VideoExperience() {
       {isApplicationOpen && (
         <section className="application-shell" aria-labelledby="application-title">
           <div className="application-topline" />
+          <button type="button" className="landing-back-button" onClick={goBackToLanding} aria-label="Back to landing page">
+            ← Back to landing
+          </button>
           <p className="modal-kicker">MANUFACTURER GROWTH PARTNER — QUALIFICATION</p>
           {!isComplete && <h1 id="application-title">Fill Out This Short Application Now</h1>}
           {!isComplete ? (
