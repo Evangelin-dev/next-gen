@@ -8,16 +8,7 @@ import { trackFacebookEvent } from "../lib/facebookPixel";
 import Script from "next/script";
 import React, { KeyboardEvent, useEffect, useRef, useState } from "react";
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      "wistia-player": React.HTMLAttributes<HTMLElement> & {
-        "media-id"?: string;
-        aspect?: string;
-      };
-    }
-  }
-}
+
 
 type Question = {
   title: string;
@@ -320,12 +311,15 @@ export default function VideoExperience() {
               filter: blur(5px);
               padding-top: 56.25%;
             }
-          `}</style>
+          `}
+        </style>
 
-          <wistia-player
-            media-id="hc3nhe9cv9"
-            aspect="1.7777777777777777"
-          ></wistia-player>
+         {React.createElement("wistia-player", {
+          "media-id": "hc3nhe9cv9",
+          aspect: "1.7777777777777777",
+        })}
+
+          
         </div>
           <div className={`apply-reveal ${isApplyVisible ? "is-visible" : ""}`}>
             <button className="primary-button apply-button" onClick={openApplication}>APPLY NOW <span aria-hidden="true">→</span></button>
