@@ -1,11 +1,23 @@
 "use client";
 
-import { KeyboardEvent, useEffect, useRef, useState } from "react";
+
 import Image from "next/image";
 import axios from "axios";
 import apiClient from "../lib/api";
 import { trackFacebookEvent } from "../lib/facebookPixel";
 import Script from "next/script";
+import React, { KeyboardEvent, useEffect, useRef, useState } from "react";
+
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      "wistia-player": React.HTMLAttributes<HTMLElement> & {
+        "media-id"?: string;
+        aspect?: string;
+      };
+    }
+  }
+}
 
 type Question = {
   title: string;
@@ -289,16 +301,16 @@ export default function VideoExperience() {
           <h1>Here&apos;s How Factories Can Build A Reliable Export Pipeline</h1>
           <p>Watch the video below to see how the guaranteed marketing funnel works.</p>
           <div className="video-frame">
-          <script
-            src="https://fast.wistia.com/player.js"
-            async
-          ></script>
+          <Script
+          src="https://fast.wistia.com/player.js"
+          strategy="afterInteractive"
+        />
 
-          <script
-            src="https://fast.wistia.com/embed/hc3nhe9cv9.js"
-            async
-            type="module"
-          ></script>
+        <Script
+          src="https://fast.wistia.com/embed/hc3nhe9cv9.js"
+          strategy="afterInteractive"
+          type="module"
+        />
 
           <style>{`
             wistia-player[media-id='hc3nhe9cv9']:not(:defined) {
