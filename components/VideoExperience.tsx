@@ -293,31 +293,30 @@ export default function VideoExperience() {
           <p>Watch the video below to see how the guaranteed marketing funnel works.</p>
           <div className="video-frame">
           <Script
-          src="https://fast.wistia.com/player.js"
-          strategy="afterInteractive"
-        />
+            src="https://fast.wistia.com/player.js"
+            strategy="afterInteractive"
+          />
 
-        <Script
-          src="https://fast.wistia.com/embed/hc3nhe9cv9.js"
-          strategy="afterInteractive"
-          type="module"
-        />
+          <Script
+            src="https://fast.wistia.com/embed/id66qveamo.js"
+            strategy="afterInteractive"
+            type="module"
+          />
 
           <style>{`
-            wistia-player[media-id='hc3nhe9cv9']:not(:defined) {
+            wistia-player[media-id='id66qveamo']:not(:defined) {
               background: center / contain no-repeat
-                url('https://fast.wistia.com/embed/medias/hc3nhe9cv9/swatch');
+                url('https://fast.wistia.com/embed/medias/id66qveamo/swatch');
               display: block;
               filter: blur(5px);
               padding-top: 56.25%;
             }
-          `}
-        </style>
+          `}</style>
 
-         {React.createElement("wistia-player", {
-          "media-id": "hc3nhe9cv9",
-          aspect: "1.7777777777777777",
-        })}
+          {React.createElement("wistia-player", {
+            "media-id": "id66qveamo",
+            aspect: "1.7777777777777777",
+          })}
 
           
         </div>
