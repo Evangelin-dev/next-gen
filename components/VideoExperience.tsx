@@ -1,10 +1,14 @@
 "use client";
 
-import { KeyboardEvent, useEffect, useRef, useState } from "react";
+
 import Image from "next/image";
 import axios from "axios";
 import apiClient from "../lib/api";
 import { trackFacebookEvent } from "../lib/facebookPixel";
+import Script from "next/script";
+import React, { KeyboardEvent, useEffect, useRef, useState } from "react";
+
+
 
 type Question = {
   title: string;
@@ -288,24 +292,35 @@ export default function VideoExperience() {
           <h1>Here&apos;s How Factories Can Build A Reliable Export Pipeline</h1>
           <p>Watch the video below to see how the guaranteed marketing funnel works.</p>
           <div className="video-frame">
-            <video
-              controls
-              playsInline
-              preload="metadata"
-              src="https://bot-portal-bucket-2026.s3.ap-south-1.amazonaws.com/Full+VID.mp4"
-              aria-label="The Bot export growth plan video"
-              onEnded={() => {
-                setIsApplyVisible(true);
-                openApplication();
-                trackFacebookEvent("VideoCompletion", {
-                  content_name: "Landing page video completion",
-                  content_category: "video",
-                  value: 1,
-                  currency: "INR",
-                });
-              }}
-            />
-          </div>
+          <Script
+          src="https://fast.wistia.com/player.js"
+          strategy="afterInteractive"
+        />
+
+        <Script
+          src="https://fast.wistia.com/embed/hc3nhe9cv9.js"
+          strategy="afterInteractive"
+          type="module"
+        />
+
+          <style>{`
+            wistia-player[media-id='hc3nhe9cv9']:not(:defined) {
+              background: center / contain no-repeat
+                url('https://fast.wistia.com/embed/medias/hc3nhe9cv9/swatch');
+              display: block;
+              filter: blur(5px);
+              padding-top: 56.25%;
+            }
+          `}
+        </style>
+
+         {React.createElement("wistia-player", {
+          "media-id": "hc3nhe9cv9",
+          aspect: "1.7777777777777777",
+        })}
+
+          
+        </div>
           <div className={`apply-reveal ${isApplyVisible ? "is-visible" : ""}`}>
             <button className="primary-button apply-button" onClick={openApplication}>APPLY NOW <span aria-hidden="true">→</span></button>
           </div>
