@@ -9,10 +9,13 @@ declare global {
 export function trackFacebookEvent(eventName: string, params?: Record<string, unknown>) {
   if (typeof window === "undefined" || typeof window.fbq !== "function") return;
 
+  const standardEvents = new Set(["PageView", "Lead", "Schedule"]);
+  const trackMethod = standardEvents.has(eventName) ? "track" : "trackCustom";
+
   if (params) {
-    window.fbq("trackCustom", eventName, params);
+    window.fbq(trackMethod, eventName, params);
     return;
   }
 
-  window.fbq("trackCustom", eventName);
+  window.fbq(trackMethod, eventName);
 }

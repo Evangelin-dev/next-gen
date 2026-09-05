@@ -92,10 +92,10 @@ export default function LandingPage() {
       <footer className="site-footer">
         <p>© The Bot 2026</p>
         <nav aria-label="Footer links">
-          <a href="#privacy">Privacy Policy</a>
-          <a href="#terms">Terms</a>
-          <a href="#refund">Refund Policy</a>
-          <a href="#disclosure">Full Disclosure</a>
+          <a href="/privacy-policy">Privacy Policy</a>
+          <a href="/terms">Terms</a>
+          <a href="/refund-policy">Refund Policy</a>
+          <a href="/full-disclosure">Full Disclosure</a>
         </nav>
         <p>This site is not a part of the Facebook website or Facebook Inc.</p>
       </footer>
