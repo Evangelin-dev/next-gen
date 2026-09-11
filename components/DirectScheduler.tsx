@@ -76,9 +76,16 @@ export default function DirectScheduler({ initialInterestId }: DirectSchedulerPr
       setAvailableSlots([]);
       setSelectedSlot(null);
       try {
-        const response = await apiClient.get<{ available_slots: CalendarSlot[] }>(
+        const response = await apiClient.get<{
+          date?: string;
+          recommended_date?: string;
+          available_slots: CalendarSlot[];
+        }>(
           `/google/calendar/availability?date=${selectedDate}&timezone=Asia/Kolkata`,
         );
+        if (response.data.date && response.data.date !== selectedDate) {
+          setSelectedDate(response.data.date);
+        }
         setAvailableSlots(response.data.available_slots || []);
       } catch (requestError) {
         setError(getRequestError(requestError, "We could not load available times. Please try again."));
