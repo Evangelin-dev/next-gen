@@ -9,3 +9,11 @@ declare namespace JSX {
     };
   }
 }
+
+interface Window {
+  _wq?: Array<{
+    id: string;
+    onReady: (video: any) => void;
+  }>;
+  Wistia?: any;
+}

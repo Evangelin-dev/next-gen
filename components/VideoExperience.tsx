@@ -94,10 +94,52 @@ export default function VideoExperience() {
   const [isBooking, setIsBooking] = useState(false);
   const [booking, setBooking] = useState<{ meet_link?: string; start_time?: string } | null>(null);
   const questionRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<HTMLElement | null>(null);
+  const openApplicationRef = useRef(openApplication);
+
+  useEffect(() => {
+    openApplicationRef.current = openApplication;
+  });
 
   useEffect(() => {
     const timer = window.setTimeout(() => setIsApplyVisible(true), 3500);
     return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const bindVideo = (video: any) => {
+      if (!video || video._hasEndBound) return;
+      video._hasEndBound = true;
+      video.bind("end", () => {
+        openApplicationRef.current();
+      });
+      video.bind("percentwatchedchanged", (percent: number) => {
+        if (percent >= 0.99) {
+          openApplicationRef.current();
+        }
+      });
+    };
+
+    window._wq = window._wq || [];
+    window._wq.push({ id: "_all", onReady: bindVideo });
+    window._wq.push({ id: "id66qveamo", onReady: bindVideo });
+  }, []);
+
+  useEffect(() => {
+    const el = playerRef.current;
+    if (!el) return;
+
+    const handleEnd = () => {
+      openApplicationRef.current();
+    };
+
+    el.addEventListener("end", handleEnd);
+    el.addEventListener("ended", handleEnd);
+
+    return () => {
+      el.removeEventListener("end", handleEnd);
+      el.removeEventListener("ended", handleEnd);
+    };
   }, []);
 
   useEffect(() => {
@@ -316,6 +358,7 @@ export default function VideoExperience() {
           {React.createElement("wistia-player", {
             "media-id": "id66qveamo",
             aspect: "1.7777777777777777",
+            ref: playerRef,
           })}
 
           
