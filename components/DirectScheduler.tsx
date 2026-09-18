@@ -6,7 +6,6 @@ import axios from "axios";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import apiClient from "../lib/api";
-import { trackFacebookEvent } from "../lib/facebookPixel";
 
 type CalendarSlot = {
   start: string;
@@ -100,12 +99,6 @@ export default function DirectScheduler({ initialInterestId }: DirectSchedulerPr
   useEffect(() => {
     if (!booking) return;
 
-    trackFacebookEvent("WhatsAppContact", {
-      content_name: "Post-booking WhatsApp handoff",
-      content_category: "whatsapp",
-      value: 1,
-      currency: "INR",
-    });
     window.open(WHATSAPP_URL, "_blank", "noopener,noreferrer");
     window.open(BUSINESS_URL, "_blank", "noopener,noreferrer");
   }, [booking]);
@@ -171,12 +164,6 @@ export default function DirectScheduler({ initialInterestId }: DirectSchedulerPr
         status: isRescheduling ? "meeting_rescheduled" : "meeting_booked",
       });
       setBooking(response.data);
-      trackFacebookEvent("Schedule", {
-        content_name: "Direct scheduler booking",
-        content_category: "booking",
-        value: 1,
-        currency: "INR",
-      });
       setStage("complete");
     } catch (requestError) {
       setError(axios.isAxiosError(requestError) && requestError.response?.status === 409

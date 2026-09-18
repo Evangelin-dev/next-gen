@@ -4,8 +4,7 @@
 import Image from "next/image";
 import axios from "axios";
 import apiClient from "../lib/api";
-import { trackFacebookEvent } from "../lib/facebookPixel";
-import Script from "next/script";
+
 import React, { KeyboardEvent, useEffect, useRef, useState } from "react";
 
 
@@ -35,43 +34,87 @@ function getTodayInCalendarTimezone() {
 
 const questions: Question[] = [
   {
-    title: "What best describes your business?",
-    options: ["Manufacturer / OEM", "Manufacturer + Exporter", "Service Business"],
-  },
-  {
-    title: "What is your biggest growth goal right now?",
+    title:
+      "Imagine you are working in a company. Which activity sounds most exciting to you?",
     options: [
-      "Generate more qualified B2B enquiries",
-      "Generate export enquiries / enter international markets",
-      "Build a predictable sales pipeline and increase revenue",
+      "Promoting the company online and getting people to notice the brand",
+      "Talking to people and helping them understand which career could suit them",
+      "Working with a well-known builder and helping market their projects",
+      "Finding ways to increase the company's sales and revenue",
+      "Working behind the scenes and making sure everything runs smoothly",
     ],
   },
   {
-    title: "What is currently stopping you from achieving that growth?",
+    title:
+      "Someone gives you a new business. What would you naturally want to do first?",
     options: [
-      "Not enough qualified enquiries",
-      "We get enquiries but struggle with positioning/conversion",
-      "We don't have a predictable acquisition system",
+      "Create social media content and promote it digitally",
+      "Understand the people who might need its products or services",
+      "Find a way to make the brand look attractive and trustworthy",
+      "Find customers and figure out how to increase sales",
+      "Understand the systems and processes needed to run the business",
     ],
   },
   {
-    title: "What is your current annual turnover?",
-    options: ["Below ₹5 Crore", "₹5–25 Crore", "₹25 Crore+"],
-  },
-  {
-    title: "How soon do you want to solve this?",
-    options: ["Immediately", "Within 3 months", "Just exploring"],
-  },
-  {
-    title: "If we show you a strategy that makes sense for your business, how ready are you to implement it?",
-    options: ["Ready to start immediately", "Ready if the strategy makes sense", "Not ready yet"],
-  },
-  {
-    title: "If the right growth strategy requires investment, which best describes you?",
+    title: "Which conversation would you enjoy having?",
     options: [
-      "Ready to invest if the opportunity makes sense",
-      "Willing to invest, but need to understand the plan first",
-      "Not looking to invest right now",
+      "“How can we make this brand go viral?”",
+      "“What kind of career would actually suit this person?”",
+      "“How can we make this real-estate project more attractive to buyers?”",
+      "“Why are sales falling, and how can we increase revenue?”",
+      "“How can we make the whole operation work better?”",
+    ],
+  },
+  {
+    title: "Which achievement would make you feel most proud?",
+    options: [
+      "“I helped thousands of people discover this brand.”",
+      "“I helped someone find the right career direction.”",
+      "“I helped a major builder successfully promote their project.”",
+      "“I helped a business significantly increase its revenue.”",
+      "“I built the system that made everything work efficiently.”",
+    ],
+  },
+  {
+    title: "What kind of work environment attracts you?",
+    options: [
+      "Fast-moving, creative and digital",
+      "People-oriented, interactive and meaningful",
+      "Professional, client-facing and connected to major projects",
+      "Competitive, target-driven and focused on business growth",
+      "Structured, technical and behind the scenes",
+    ],
+  },
+  {
+    title:
+      "When you see a successful business, what are you most curious about?",
+    options: [
+      "“How did they build such a strong online presence?”",
+      "“How did they find the right people for their team?”",
+      "“How did they build such a powerful brand?”",
+      "“How much revenue are they generating, and how can they grow further?”",
+      "“What systems are running behind this business?”",
+    ],
+  },
+  {
+    title: "Which statement sounds most like you?",
+    options: [
+      "I like getting attention. I enjoy communication, creativity and making people notice something.",
+      "I like understanding people. I enjoy listening, asking questions and helping people make decisions.",
+      "I like working with influential brands and people. I want exposure to established businesses and major projects.",
+      "I like making things grow. Targets, sales, revenue and business growth motivate me.",
+      "I like making things work. I prefer planning, systems, technology and execution behind the scenes.",
+    ],
+  },
+  {
+    title:
+      "If you could become really good at ONE thing, which would you choose?",
+    options: [
+      "Digital Marketing",
+      "Counselling & Communication",
+      "Branding & Client Management",
+      "Sales & Business Growth",
+      "Technology & Operations",
     ],
   },
 ];
@@ -178,12 +221,7 @@ export default function VideoExperience() {
   useEffect(() => {
     if (!booking) return;
 
-    trackFacebookEvent("WhatsAppContact", {
-      content_name: "Post-booking WhatsApp handoff",
-      content_category: "whatsapp",
-      value: 1,
-      currency: "INR",
-    });
+    
     window.open(WHATSAPP_URL, "_blank", "noopener,noreferrer");
     window.open(BUSINESS_URL, "_blank", "noopener,noreferrer");
   }, [booking]);
@@ -236,12 +274,6 @@ export default function VideoExperience() {
         });
         setCanSchedule(isQualified);
         setIsComplete(true);
-        trackFacebookEvent("VideoCompletion", {
-          content_name: "Application video completion",
-          content_category: "qualification",
-          value: isQualified ? 1 : 0,
-          currency: "INR",
-        });
       } catch (requestError) {
         const detail = axios.isAxiosError(requestError)
           && requestError.response?.data?.detail;
@@ -272,12 +304,6 @@ export default function VideoExperience() {
         meeting_date: response.data.start_time || selectedSlot.start,
         status: "meeting_booked",
         is_qualified: true,
-      });
-      trackFacebookEvent("Schedule", {
-        content_name: "Booked growth call",
-        content_category: "booking",
-        value: 1,
-        currency: "INR",
       });
       setBooking(response.data);
     } catch (requestError) {
@@ -329,39 +355,21 @@ export default function VideoExperience() {
     <main className={`video-page ${isApplicationOpen ? "application-mode" : ""}`}>
       {!isApplicationOpen && (
         <section className="video-content">
-          <Image className="brand-mark" src="/BOT_BLACK.png" alt="The Bot" width={652} height={652} priority />
+          <Image className="brand-mark" src="/logo.png" alt="The Bot" width={652} height={652} priority />
           <p className="modal-kicker">YOUR EXPORT GROWTH PLAN</p>
           <h1>Here&apos;s How Factories Can Build A Reliable Export Pipeline</h1>
           <p>Watch the video below to see how the guaranteed marketing funnel works.</p>
           <div className="video-frame">
-          <Script
-            src="https://fast.wistia.com/player.js"
-            strategy="afterInteractive"
-          />
-
-          <Script
-            src="https://fast.wistia.com/embed/id66qveamo.js"
-            strategy="afterInteractive"
-            type="module"
-          />
-
-          <style>{`
-            wistia-player[media-id='id66qveamo']:not(:defined) {
-              background: center / contain no-repeat
-                url('https://fast.wistia.com/embed/medias/id66qveamo/swatch');
-              display: block;
-              filter: blur(5px);
-              padding-top: 56.25%;
-            }
-          `}</style>
-
-          {React.createElement("wistia-player", {
-            "media-id": "id66qveamo",
-            aspect: "1.7777777777777777",
-            ref: playerRef,
-          })}
-
-          
+          <video
+            className="landing-video"
+            controls
+            playsInline
+            preload="metadata"
+            onEnded={openApplication}
+          >
+            <source src="/215475.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
         </div>
           <div className={`apply-reveal ${isApplyVisible ? "is-visible" : ""}`}>
             <button className="primary-button apply-button" onClick={openApplication}>APPLY NOW <span aria-hidden="true">→</span></button>

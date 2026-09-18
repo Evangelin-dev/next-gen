@@ -7,7 +7,7 @@ import axios from "axios";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import apiClient from "../lib/api";
-import { trackFacebookEvent } from "../lib/facebookPixel";
+
 
 const roleOptions = [
   "Factory owner",
@@ -56,12 +56,7 @@ export default function LandingPage() {
       const { data } = await apiClient.post<{ id: string }>("/interests", payload);
       localStorage.setItem("interestId", data.id);
       localStorage.setItem("isQualified", String(isQualified));
-      trackFacebookEvent("Lead", {
-        content_name: "Landing page form submit",
-        content_category: "lead_capture",
-        value: 1,
-        currency: "INR",
-      });
+    
       router.push("/video");
     } catch (requestError) {
       if (axios.isAxiosError(requestError) && !requestError.response) {
@@ -77,15 +72,35 @@ export default function LandingPage() {
   return (
     <main className="landing-shell">
       <section className="hero-section">
-        <Image className="brand-mark" src="/logo.png" alt="The Bot" width={652} height={652} priority />
+        <Image
+        className="brand-mark"
+        src="/logo.png"
+        alt="The Bot"
+        width={200}
+        height={80}
+        priority
+      />
         <div className="hero-content">
-          <p className="eyebrow">FOR FACTORY OWNERS ONLY</p>
-          <h1>Get 10 Export Enquiries Every Month</h1>
-          <p className="hero-subtitle">For Factory Owners Doing ₹5 Cr+ Annual Revenue &amp; Ready to Grow Through Exports.</p>
-          <button className="primary-button hero-button" onClick={() => setIsFormOpen(true)}>
-            Get Your Export Growth Plan <span aria-hidden="true">→</span>
-          </button>
-          <p className="hero-note">Only for established factories ready to explore international markets.</p>
+          <p className="eyebrow">FOR STUDENTS</p>
+
+        <h1>Unsure Which Career Path Is Right For You?</h1>
+
+        <p className="hero-subtitle">
+          Answer 8 simple questions and discover the type of work that naturally suits you.
+        </p>
+
+        <p className="hero-note">
+          No marks. No right or wrong answers. Just honest answers about what you enjoy,
+          what motivates you, and how you like to work.
+        </p>
+
+        <button
+          className="primary-button hero-button"
+          onClick={() => setIsFormOpen(true)}
+        >
+          TAKE THE QUICK ASSESSMENT <span aria-hidden="true">→</span>
+        </button>
+         
         </div>
       </section>
 
@@ -112,19 +127,9 @@ export default function LandingPage() {
                 <label><span>Work email *</span><input name="email" type="email" placeholder="Enter your work email" required /></label>
                 <label><span>Phone number *</span><PhoneInput name="phone" required defaultCountry="IN" value={phone} onChange={setPhone} placeholder="Enter your phone number" /></label>
                 <label>
-                  <span>Please describe what you do currently? *</span>
-                    <select value={role} onChange={(event) => {
-                      const selectedRole = event.target.value;
-                      const qualifiesByRole = ["Factory owner", "Exporter", "Manufacturer"].includes(selectedRole);
-                      setRole(selectedRole);
-                      setIsQualified(qualifiesByRole);
-                      setShowQualificationNotice(!qualifiesByRole);
-                      setError("");
-                    }} required>
-                    <option value="" disabled>Select an option</option>
-                    {roleOptions.map((option) => <option key={option} value={option}>{option}</option>)}
-                  </select>
-                </label>
+                <span>Please describe what you do currently? *</span>
+                <input name="currentRole" type="text" placeholder="Enter what you currently do" required />
+              </label>
               </div>
               {role === "None of the above" && <label><span>Please specify *</span><input name="otherRole" type="text" placeholder="Please specify" required /></label>}
               {error && <p className="form-error" role="alert">{error}</p>}
