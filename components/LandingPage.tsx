@@ -127,8 +127,19 @@ export default function LandingPage() {
                 <label><span>Work email *</span><input name="email" type="email" placeholder="Enter your work email" required /></label>
                 <label><span>Phone number *</span><PhoneInput name="phone" required defaultCountry="IN" value={phone} onChange={setPhone} placeholder="Enter your phone number" /></label>
                 <label>
-                <span>Please describe what you do currently? *</span>
-                <input name="currentRole" type="text" placeholder="Enter what you currently do" required />
+                <span>What best describes you currently? *</span>
+                <select name="currentRole" required defaultValue="">
+                  <option value="" disabled>
+                    Select an option
+                  </option>
+                  <option value="Student">Student</option>
+                  <option value="Recent Graduate">Recent Graduate</option>
+                  <option value="Working Professional">Working Professional</option>
+                  <option value="Career Changer">Career Changer</option>
+                  <option value="Job Seeker">Job Seeker</option>
+                  <option value="Parent / Guardian">Parent / Guardian</option>
+                  <option value="Other">Other</option>
+                </select>
               </label>
               </div>
               {role === "None of the above" && <label><span>Please specify *</span><input name="otherRole" type="text" placeholder="Please specify" required /></label>}
