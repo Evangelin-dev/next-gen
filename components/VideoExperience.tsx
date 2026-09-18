@@ -356,9 +356,14 @@ export default function VideoExperience() {
       {!isApplicationOpen && (
         <section className="video-content">
           <Image className="brand-mark" src="/logo.png" alt="The Bot" width={652} height={652} priority />
-          <p className="modal-kicker">YOUR EXPORT GROWTH PLAN</p>
-          <h1>Here&apos;s How Factories Can Build A Reliable Export Pipeline</h1>
-          <p>Watch the video below to see how the guaranteed marketing funnel works.</p>
+          <p className="modal-kicker">FOR STUDENTS</p>
+
+        <h1>How I Started Building My Career One Skill at a Time</h1>
+
+        <p>
+          Watch this 1-minute video and discover how finding the right skill can help
+          you create a career path that works for you.
+        </p>
           <div className="video-frame">
           <video
             className="landing-video"
@@ -371,8 +376,15 @@ export default function VideoExperience() {
             Your browser does not support the video tag.
           </video>
         </div>
+        <p className="assessment-prompt">
+          Not sure which skill is right for you?
+          <br />
+          Take the quick assessment and discover where your strengths may fit.
+        </p>
           <div className={`apply-reveal ${isApplyVisible ? "is-visible" : ""}`}>
-            <button className="primary-button apply-button" onClick={openApplication}>APPLY NOW <span aria-hidden="true">→</span></button>
+            <button className="primary-button apply-button" onClick={openApplication}>
+            TAKE THE QUICK ASSESSMENT <span aria-hidden="true">→</span>
+          </button>
           </div>
         </section>
       )}
@@ -383,8 +395,10 @@ export default function VideoExperience() {
           <button type="button" className="landing-back-button" onClick={goBackToLanding} aria-label="Back to landing page">
             ← Back to landing
           </button>
-          <p className="modal-kicker">MANUFACTURER GROWTH PARTNER — QUALIFICATION</p>
-          {!isComplete && <h1 id="application-title">Fill Out This Short Application Now</h1>}
+          <p className="modal-kicker">STUDENT CAREER ASSESSMENT</p>
+          {!isComplete && (
+  <h1 id="application-title">Discover Which Skills Suit You Best</h1>
+)}
           {!isComplete ? (
             <div className={`question-card ${isChanging ? "is-changing" : ""}`} ref={questionRef} tabIndex={-1}>
               <div className="question-meta"><span>{questionIndex + 1}</span><strong>of {questions.length}</strong></div>

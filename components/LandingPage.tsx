@@ -105,7 +105,7 @@ export default function LandingPage() {
       </section>
 
       <footer className="site-footer">
-        <p>© The Bot 2026</p>
+        {/* <p>© The Bot 2026</p> */}
         <nav aria-label="Footer links">
           <a href="/privacy-policy">Privacy Policy</a>
           <a href="/terms">Terms</a>
@@ -120,7 +120,7 @@ export default function LandingPage() {
           <section className="form-modal" role="dialog" aria-modal="true" aria-labelledby="form-title">
             <button className="close-button" onClick={() => setIsFormOpen(false)} aria-label="Close form">×</button>
             <p className="modal-kicker">YOUR EXPORT GROWTH PLAN</p>
-            <h2 id="form-title">Enter Your Info Below And We&apos;ll Send You A One-Pager On How Our Guaranteed Marketing Funnel Works.</h2>
+            <h2 id="form-title"> Enter your info below and get started. Find out which skill suits you best!</h2>
             <form onSubmit={handleSubmit}>
               <div className="form-grid">
                 <label><span>First name *</span><input name="firstName" type="text" placeholder="Enter your first name" required /></label>
