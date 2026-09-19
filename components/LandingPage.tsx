@@ -9,20 +9,10 @@ import "react-phone-number-input/style.css";
 import apiClient from "../lib/api";
 
 
-const roleOptions = [
-  "Factory owner",
-  "Exporter",
-  "Manufacturer",
-  "Agency owner / Freelancer",
-  "Consultant",
-  "Other",
-  "None of the above",
-];
-
 export default function LandingPage() {
   const router = useRouter();
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [role, setRole] = useState("");
+ 
   const [isQualified, setIsQualified] = useState(true);
   const [showQualificationNotice, setShowQualificationNotice] = useState(false);
   const [phone, setPhone] = useState<string | undefined>();
@@ -31,10 +21,8 @@ export default function LandingPage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!role || !phone || isSubmitting) {
-      if (!role) {
-        setError("Please choose an option to continue.");
-      } else if (!phone) {
+    if (!phone || isSubmitting) {
+      if (!phone) {
         setError("Please enter your phone number to continue.");
       }
       return;
@@ -44,17 +32,19 @@ export default function LandingPage() {
     const payload = {
       first_name: formData.get("firstName"),
       email: formData.get("email"),
-      phone: phone || null,
-      role,
-      other_role: role === "None of the above" ? formData.get("otherRole") : null,
-      is_qualified: isQualified,
+      phone: phone || "",
+      role: formData.get("currentRole"),
+      college : formData.get("college") || "",
+      questionnaire_data: {
+        current_role: formData.get("currentRole"),
+      },
     };
 
     setError("");
     setIsSubmitting(true);
     try {
-      const { data } = await apiClient.post<{ id: string }>("/interests", payload);
-      localStorage.setItem("interestId", data.id);
+      const { data } = await apiClient.post("/students/", payload);
+      localStorage.setItem("studentId", String(data.id));
       localStorage.setItem("isQualified", String(isQualified));
     
       router.push("/video");
@@ -142,7 +132,44 @@ export default function LandingPage() {
                 </select>
               </label>
               </div>
-              {role === "None of the above" && <label><span>Please specify *</span><input name="otherRole" type="text" placeholder="Please specify" required /></label>}
+              <label>
+  <span>Explore your counselling centre*</span>
+
+  <select name="college" required defaultValue="">
+    <option value="" disabled>
+      Select your college
+    </option>
+
+    <option value="Manohar Joshi, Sion">
+      Manohar Joshi, Sion
+    </option>
+
+    <option value="Mumbai Management, Mira Road">
+      Mumbai Management, Mira Road
+    </option>
+
+    <option value="Indo Scot, Thane">
+      Indo Scot, Thane
+    </option>
+
+    <option value="Goenka, Dombivali">
+      Goenka, Dombivali
+    </option>
+
+    <option value="Vivekanand, Kopar Khairane">
+      Vivekanand, Kopar Khairane
+    </option>
+
+    <option value="Indala, Kalyan">
+      Indala, Kalyan
+    </option>
+
+    <option value="Online Campus">
+      Online Campus
+    </option>
+  </select>
+</label>
+              
               {error && <p className="form-error" role="alert">{error}</p>}
               <button className="primary-button submit-button" type="submit" disabled={isSubmitting}>{isSubmitting ? "SUBMITTING..." : "WATCH NOW FOR FREE"} <span aria-hidden="true">→</span></button>
               <p className="consent-copy">By submitting this form, you agree to be contacted about your export growth plan.</p>

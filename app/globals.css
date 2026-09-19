@@ -183,4 +183,45 @@ input::placeholder { color: #99a5b3; }
 	.slot-list { grid-template-columns: repeat(2, 1fr); gap: 7px; margin-top: 14px; }
 	.slot-button { min-height: 42px; font-size: 13px; }
 	.book-button { min-height: 48px; margin-top: 16px; }
+
+	/* College selection */
+
+.college-selection {
+  width: 100%;
+  max-width: 500px;
+  margin: 12px auto 0;
+  text-align: left;
 }
+
+.college-selection label {
+  display: block;
+  margin-bottom: 5px;
+  color: #40516a;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.college-selection select {
+  width: 100%;
+  height: 40px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid #d5e2ec;
+  border-radius: 6px;
+  outline: none;
+  color: var(--ink);
+  background: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.college-selection select:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px #1199e81f;
+}
+}
+
+
+
+

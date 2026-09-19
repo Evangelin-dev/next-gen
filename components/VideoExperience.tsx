@@ -19,7 +19,7 @@ type CalendarSlot = {
   end: string;
 };
 
-const WHATSAPP_NUMBER = "919892969648";
+const WHATSAPP_NUMBER = "91 91677 27792";
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi, my meeting has been booked. Please confirm the details.")}`;
 const BUSINESS_URL = process.env.NEXT_PUBLIC_BUSINESS_URL || "https://thebotagency.com";
 
@@ -126,6 +126,8 @@ export default function VideoExperience() {
   const [selectedOption, setSelectedOption] = useState("");
   const [isChanging, setIsChanging] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const [showCollegeOffers, setShowCollegeOffers] = useState(false);
+  const [selectedCollege, setSelectedCollege] = useState("");
   const [canSchedule, setCanSchedule] = useState(false);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [saveError, setSaveError] = useState("");
@@ -234,12 +236,15 @@ export default function VideoExperience() {
     setIsComplete(false);
     setCanSchedule(false);
     setAnswers({});
+    setSelectedCollege("");
+    setSelectedCollege("");
     setSaveError("");
     setBooking(null);
     setSelectedDate(getTodayInCalendarTimezone());
     setAvailableSlots([]);
     setCalendarError("");
     setSelectedSlot(null);
+    
   }
 
   function chooseOption(option: string) {
@@ -255,36 +260,16 @@ export default function VideoExperience() {
   }
 
   async function completeOrAdvance(updatedAnswers: Record<string, string>) {
-    if (questionIndex === questions.length - 1) {
-      const roleQualified = localStorage.getItem("isQualified") !== "false";
-      const isQualified = roleQualified
-        && updatedAnswers[questions[questions.length - 1].title] !== "Not looking to invest right now";
-      const interestId = localStorage.getItem("interestId");
-      if (!interestId) {
-        setSaveError("We could not find your application. Please return and submit your details again.");
-        setIsChanging(false);
-        return;
-      }
-
-      try {
-        localStorage.setItem("isQualified", String(isQualified));
-        await apiClient.patch(`/interests/${interestId}`, {
-          questionnaire_data: updatedAnswers,
-          is_qualified: isQualified,
-        });
-        setCanSchedule(isQualified);
-        setIsComplete(true);
-      } catch (requestError) {
-        const detail = axios.isAxiosError(requestError)
-          && requestError.response?.data?.detail;
-        setSaveError(typeof detail === "string" ? detail : "We could not save your answers. Please choose your answer again.");
-      }
-    } else {
-      setQuestionIndex((current) => current + 1);
-      setSelectedOption("");
-    }
-    setIsChanging(false);
+  if (questionIndex === questions.length - 1) {
+    setShowCollegeOffers(true);
+    setIsComplete(true);
+  } else {
+    setQuestionIndex((current) => current + 1);
+    setSelectedOption("");
   }
+
+  setIsChanging(false);
+}
 
   async function bookSelectedSlot() {
     const interestId = localStorage.getItem("interestId");
@@ -372,7 +357,7 @@ export default function VideoExperience() {
             preload="metadata"
             onEnded={openApplication}
           >
-            <source src="/215475.mp4" type="video/mp4" />
+            <source src="/Next_Gener_Promo.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         </div>
@@ -424,47 +409,20 @@ export default function VideoExperience() {
               </div>
             </div>
           ) : (
-            <div className="calendly-placeholder">
-              <div className="success-mark">✓</div>
-              <p className="modal-kicker">APPLICATION COMPLETE</p>
-              {!canSchedule ? (
-                <>
-                  <h2>Thanks for completing the application.</h2>
-                  <p>We&apos;re unable to schedule a meeting at this time.</p>
-                  <button className="secondary-button" onClick={() => setIsApplicationOpen(false)}>WATCH THE VIDEO AGAIN <span aria-hidden="true">→</span></button>
-                </>
-              ) : booking ? (
-                <>
-                  <h2>Your call is booked.</h2>
-                  <p>The meeting invite has been sent to your email. We will continue on WhatsApp and our business page.</p>
-                  <div className="cta-stack">
-                    <a className="meet-link" href={WHATSAPP_URL} target="_blank" rel="noreferrer">Open WhatsApp <span aria-hidden="true">→</span></a>
-                    <a className="secondary-button" href={BUSINESS_URL} target="_blank" rel="noreferrer">Visit Business Page <span aria-hidden="true">→</span></a>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <h2>Choose a time that works for you.</h2>
-                  <p>Available 30-minute slots are shown in India Standard Time.</p>
-                  <div className="calendar-controls">
-                    <label htmlFor="calendar-date">Choose a date</label>
-                    <input id="calendar-date" type="date" value={selectedDate} min={getTodayInCalendarTimezone()} onChange={(event) => setSelectedDate(event.target.value)} />
-                  </div>
-                  {isLoadingSlots && <div className="calendar-loading"><span /> Loading available times...</div>}
-                  {!isLoadingSlots && !calendarError && availableSlots.length === 0 && <p className="calendar-empty">No times are available on this date. Choose another date.</p>}
-                  {calendarError && <p className="form-error" role="alert">{calendarError}</p>}
-                  {!isLoadingSlots && availableSlots.length > 0 && (
-                    <div className="slot-list" aria-label="Available times">
-                      {availableSlots.map((slot) => (
-                        <button className={`slot-button ${selectedSlot?.start === slot.start ? "is-selected" : ""}`} key={slot.start} onClick={() => setSelectedSlot(slot)}>{formatSlot(slot)}</button>
-                      ))}
-                    </div>
-                  )}
-                  <button className="primary-button book-button" disabled={!selectedSlot || isBooking} onClick={() => void bookSelectedSlot()}>{isBooking ? "BOOKING..." : "BOOK THIS TIME"}<span aria-hidden="true">→</span></button>
-                </>
-              )}
-            </div>
-          )}
+  <div className="calendly-placeholder">
+    <div className="success-mark">✓</div>
+
+    <p className="modal-kicker">ASSESSMENT COMPLETE</p>
+
+
+    <button
+      className="secondary-button"
+      onClick={goBackToLanding}
+    >
+      BACK TO LANDING <span aria-hidden="true">→</span>
+    </button>
+  </div>
+)}
         </section>
       )}
     </main>
