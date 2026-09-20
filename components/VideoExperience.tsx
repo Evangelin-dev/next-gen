@@ -1,36 +1,29 @@
 "use client";
 
-
 import Image from "next/image";
-import axios from "axios";
-import apiClient from "../lib/api";
-
-import React, { KeyboardEvent, useEffect, useRef, useState } from "react";
-
-
+import React, {
+  KeyboardEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 type Question = {
   title: string;
   options: string[];
 };
 
-type CalendarSlot = {
-  start: string;
-  end: string;
-};
+const WHATSAPP_NUMBER = "919167727792";
 
-const WHATSAPP_NUMBER = "91 91677 27792";
-const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi, my meeting has been booked. Please confirm the details.")}`;
-const BUSINESS_URL = process.env.NEXT_PUBLIC_BUSINESS_URL || "https://thebotagency.com";
-
-function getTodayInCalendarTimezone() {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Kolkata",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
-}
+const collegeOptions = [
+  "Manohar Joshi, Sion",
+  "Mumbai Management, Mira Road",
+  "Indo Scot, Thane",
+  "Goenka, Dombivali",
+  "Vivekanand, Kopar Khairane",
+  "Indala, Kalyan",
+  "Online Campus",
+];
 
 const questions: Question[] = [
   {
@@ -126,192 +119,92 @@ export default function VideoExperience() {
   const [selectedOption, setSelectedOption] = useState("");
   const [isChanging, setIsChanging] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
-  const [showCollegeOffers, setShowCollegeOffers] = useState(false);
   const [selectedCollege, setSelectedCollege] = useState("");
-  const [canSchedule, setCanSchedule] = useState(false);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [saveError, setSaveError] = useState("");
-  const [selectedDate, setSelectedDate] = useState(getTodayInCalendarTimezone);
-  const [availableSlots, setAvailableSlots] = useState<CalendarSlot[]>([]);
-  const [isLoadingSlots, setIsLoadingSlots] = useState(false);
-  const [calendarError, setCalendarError] = useState("");
-  const [selectedSlot, setSelectedSlot] = useState<CalendarSlot | null>(null);
-  const [isBooking, setIsBooking] = useState(false);
-  const [booking, setBooking] = useState<{ meet_link?: string; start_time?: string } | null>(null);
+
   const questionRef = useRef<HTMLDivElement>(null);
-  const playerRef = useRef<HTMLElement | null>(null);
-  const openApplicationRef = useRef(openApplication);
 
   useEffect(() => {
-    openApplicationRef.current = openApplication;
-  });
+    const timer = window.setTimeout(() => {
+      setIsApplyVisible(true);
+    }, 3500);
 
-  useEffect(() => {
-    const timer = window.setTimeout(() => setIsApplyVisible(true), 3500);
     return () => window.clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    const bindVideo = (video: any) => {
-      if (!video || video._hasEndBound) return;
-      video._hasEndBound = true;
-      video.bind("end", () => {
-        openApplicationRef.current();
-      });
-      video.bind("percentwatchedchanged", (percent: number) => {
-        if (percent >= 0.99) {
-          openApplicationRef.current();
-        }
-      });
-    };
-
-    window._wq = window._wq || [];
-    window._wq.push({ id: "_all", onReady: bindVideo });
-    window._wq.push({ id: "id66qveamo", onReady: bindVideo });
-  }, []);
-
-  useEffect(() => {
-    const el = playerRef.current;
-    if (!el) return;
-
-    const handleEnd = () => {
-      openApplicationRef.current();
-    };
-
-    el.addEventListener("end", handleEnd);
-    el.addEventListener("ended", handleEnd);
-
-    return () => {
-      el.removeEventListener("end", handleEnd);
-      el.removeEventListener("ended", handleEnd);
-    };
   }, []);
 
   useEffect(() => {
     if (isApplicationOpen) {
       questionRef.current?.focus();
-      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     }
   }, [isApplicationOpen, questionIndex]);
 
-  useEffect(() => {
-    if (!isComplete || !canSchedule) return;
-
-    async function loadAvailability() {
-      setIsLoadingSlots(true);
-      setCalendarError("");
-      setAvailableSlots([]);
-      setSelectedSlot(null);
-      try {
-        const response = await apiClient.get<{ available_slots: CalendarSlot[] }>(
-          `/google/calendar/availability?date=${selectedDate}&timezone=Asia/Kolkata`,
-        );
-        setAvailableSlots(response.data.available_slots || []);
-      } catch (requestError) {
-        const detail = axios.isAxiosError(requestError) && requestError.response?.data?.detail;
-        setCalendarError(requestError && axios.isAxiosError(requestError) && requestError.response?.status === 500
-          ? "The calendar is not connected yet. Please try again later."
-          : typeof detail === "string" ? detail : "We could not load available times. Please try again.");
-      } finally {
-        setIsLoadingSlots(false);
-      }
-    }
-
-    void loadAvailability();
-  }, [canSchedule, isComplete, selectedDate]);
-
-  useEffect(() => {
-    if (!booking) return;
-
-    
-    window.open(WHATSAPP_URL, "_blank", "noopener,noreferrer");
-    window.open(BUSINESS_URL, "_blank", "noopener,noreferrer");
-  }, [booking]);
-
   function openApplication() {
-    localStorage.removeItem("isQualified");
     setIsApplicationOpen(true);
     setQuestionIndex(0);
     setSelectedOption("");
     setIsComplete(false);
-    setCanSchedule(false);
     setAnswers({});
     setSelectedCollege("");
-    setSelectedCollege("");
-    setSaveError("");
-    setBooking(null);
-    setSelectedDate(getTodayInCalendarTimezone());
-    setAvailableSlots([]);
-    setCalendarError("");
-    setSelectedSlot(null);
-    
   }
 
   function chooseOption(option: string) {
     if (isChanging) return;
+
     setSelectedOption(option);
     setIsChanging(true);
-    setSaveError("");
-    const updatedAnswers = { ...answers, [question.title]: option };
+
+    const updatedAnswers = {
+      ...answers,
+      [questions[questionIndex].title]: option,
+    };
+
     setAnswers(updatedAnswers);
+
     window.setTimeout(() => {
-      void completeOrAdvance(updatedAnswers);
+      completeOrAdvance(updatedAnswers);
     }, 500);
   }
 
-  async function completeOrAdvance(updatedAnswers: Record<string, string>) {
-  if (questionIndex === questions.length - 1) {
-    setShowCollegeOffers(true);
-    setIsComplete(true);
-  } else {
-    setQuestionIndex((current) => current + 1);
-    setSelectedOption("");
-  }
+  function completeOrAdvance(
+    updatedAnswers: Record<string, string>
+  ) {
+    setAnswers(updatedAnswers);
 
-  setIsChanging(false);
-}
-
-  async function bookSelectedSlot() {
-    const interestId = localStorage.getItem("interestId");
-    if (!interestId || !selectedSlot || isBooking) return;
-
-    setIsBooking(true);
-    setCalendarError("");
-    try {
-      const response = await apiClient.post<{ meet_link?: string; start_time?: string }>("/google/calendar/booking", {
-        interest_id: interestId,
-        start_time: selectedSlot.start,
-        end_time: selectedSlot.end,
-        timezone: "Asia/Kolkata",
-      });
-      localStorage.setItem("isQualified", "true");
-      await apiClient.patch(`/interests/${interestId}/update`, {
-        meeting_date: response.data.start_time || selectedSlot.start,
-        status: "meeting_booked",
-        is_qualified: true,
-      });
-      setBooking(response.data);
-    } catch (requestError) {
-      const status = axios.isAxiosError(requestError) ? requestError.response?.status : undefined;
-      const detail = axios.isAxiosError(requestError) && requestError.response?.data?.detail;
-      setCalendarError(status === 409
-        ? "That time was just booked. Please choose another slot."
-        : typeof detail === "string" ? detail : "We could not book that time. Please choose another slot.");
-      setSelectedSlot(null);
-    } finally {
-      setIsBooking(false);
+    if (questionIndex === questions.length - 1) {
+      setIsComplete(true);
+    } else {
+      setQuestionIndex((current) => current + 1);
+      setSelectedOption("");
     }
+
+    setIsChanging(false);
   }
 
-  function formatSlot(slot: CalendarSlot) {
-    return new Intl.DateTimeFormat("en-IN", {
-      timeZone: "Asia/Kolkata",
-      hour: "numeric",
-      minute: "2-digit",
-    }).format(new Date(slot.start));
+  function handleCollegeSubmit() {
+    if (!selectedCollege) return;
+
+    const message = `Hi, I would like to book an appointment with your counselling centre.
+
+College Name: ${selectedCollege}
+
+Please share the available appointment details.`;
+
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+      message
+    )}`;
+
+    window.location.href = whatsappUrl;
   }
 
-  function handleOptionKeyDown(event: KeyboardEvent<HTMLButtonElement>, option: string) {
+  function handleOptionKeyDown(
+    event: KeyboardEvent<HTMLButtonElement>,
+    option: string
+  ) {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       chooseOption(option);
@@ -323,106 +216,225 @@ export default function VideoExperience() {
     setQuestionIndex(0);
     setSelectedOption("");
     setIsComplete(false);
-    setCanSchedule(false);
     setAnswers({});
-    setSaveError("");
-    setBooking(null);
-    setSelectedDate(getTodayInCalendarTimezone());
-    setAvailableSlots([]);
-    setCalendarError("");
-    setSelectedSlot(null);
+    setSelectedCollege("");
     setIsApplyVisible(true);
   }
 
   const question = questions[questionIndex];
 
   return (
-    <main className={`video-page ${isApplicationOpen ? "application-mode" : ""}`}>
+    <main
+      className={`video-page ${
+        isApplicationOpen ? "application-mode" : ""
+      }`}
+    >
       {!isApplicationOpen && (
         <section className="video-content">
-          <Image className="brand-mark" src="/logo.png" alt="The Bot" width={652} height={652} priority />
+          <Image
+            className="brand-mark"
+            src="/logo.png"
+            alt="The Bot"
+            width={652}
+            height={652}
+            priority
+          />
+
           <p className="modal-kicker">FOR STUDENTS</p>
 
-        <h1>How I Started Building My Career One Skill at a Time</h1>
+          <h1>
+            How I Started Building My Career One Skill at a Time
+          </h1>
 
-        <p>
-          Watch this 1-minute video and discover how finding the right skill can help
-          you create a career path that works for you.
-        </p>
+          <p>
+            Watch this 1-minute video and discover how finding the right
+            skill can help you create a career path that works for you.
+          </p>
+
           <div className="video-frame">
-          <video
-            className="landing-video"
-            controls
-            playsInline
-            preload="metadata"
-            onEnded={openApplication}
+            <video
+              className="landing-video"
+              controls
+              playsInline
+              preload="metadata"
+              onEnded={openApplication}
+            >
+              <source
+                src="/Next_Gener_Promo.mp4"
+                type="video/mp4"
+              />
+
+              Your browser does not support the video tag.
+            </video>
+          </div>
+
+          <p className="assessment-prompt">
+            Not sure which skill is right for you?
+            <br />
+            Take the quick assessment and discover where your strengths
+            may fit.
+          </p>
+
+          <div
+            className={`apply-reveal ${
+              isApplyVisible ? "is-visible" : ""
+            }`}
           >
-            <source src="/Next_Gener_Promo.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        </div>
-        <p className="assessment-prompt">
-          Not sure which skill is right for you?
-          <br />
-          Take the quick assessment and discover where your strengths may fit.
-        </p>
-          <div className={`apply-reveal ${isApplyVisible ? "is-visible" : ""}`}>
-            <button className="primary-button apply-button" onClick={openApplication}>
-            TAKE THE QUICK ASSESSMENT <span aria-hidden="true">→</span>
-          </button>
+            <button
+              className="primary-button apply-button"
+              onClick={openApplication}
+            >
+              TAKE THE QUICK ASSESSMENT
+              <span aria-hidden="true">→</span>
+            </button>
           </div>
         </section>
       )}
 
       {isApplicationOpen && (
-        <section className="application-shell" aria-labelledby="application-title">
+        <section
+          className="application-shell"
+          aria-labelledby="application-title"
+        >
           <div className="application-topline" />
-          <button type="button" className="landing-back-button" onClick={goBackToLanding} aria-label="Back to landing page">
+
+          <button
+            type="button"
+            className="landing-back-button"
+            onClick={goBackToLanding}
+            aria-label="Back to landing page"
+          >
             ← Back to landing
           </button>
-          <p className="modal-kicker">STUDENT CAREER ASSESSMENT</p>
+
+          <p className="modal-kicker">
+            STUDENT CAREER ASSESSMENT
+          </p>
+
           {!isComplete && (
-  <h1 id="application-title">Discover Which Skills Suit You Best</h1>
-)}
+            <h1 id="application-title">
+              Discover Which Skills Suit You Best
+            </h1>
+          )}
+
           {!isComplete ? (
-            <div className={`question-card ${isChanging ? "is-changing" : ""}`} ref={questionRef} tabIndex={-1}>
-              <div className="question-meta"><span>{questionIndex + 1}</span><strong>of {questions.length}</strong></div>
-              <div className="progress-track"><span style={{ width: `${((questionIndex + 1) / questions.length) * 100}%` }} /></div>
-              <p className="question-number">QUESTION {questionIndex + 1}</p>
+            <div
+              className={`question-card ${
+                isChanging ? "is-changing" : ""
+              }`}
+              ref={questionRef}
+              tabIndex={-1}
+            >
+              <div className="question-meta">
+                <span>{questionIndex + 1}</span>
+                <strong>of {questions.length}</strong>
+              </div>
+
+              <div className="progress-track">
+                <span
+                  style={{
+                    width: `${
+                      ((questionIndex + 1) /
+                        questions.length) *
+                      100
+                    }%`,
+                  }}
+                />
+              </div>
+
+              <p className="question-number">
+                QUESTION {questionIndex + 1}
+              </p>
+
               <h2>{question.title}</h2>
-              <p className="question-hint">Select one answer to continue. Press Enter after choosing.</p>
-              {saveError && <p className="form-error" role="alert">{saveError}</p>}
+
+              <p className="question-hint">
+                Select one answer to continue. Press Enter after
+                choosing.
+              </p>
+
               <div className="answer-list">
                 {question.options.map((option, index) => (
                   <button
-                    className={`answer-button ${selectedOption === option ? "is-selected" : ""}`}
+                    className={`answer-button ${
+                      selectedOption === option
+                        ? "is-selected"
+                        : ""
+                    }`}
                     key={option}
                     onClick={() => chooseOption(option)}
-                    onKeyDown={(event) => handleOptionKeyDown(event, option)}
+                    onKeyDown={(event) =>
+                      handleOptionKeyDown(event, option)
+                    }
                     disabled={isChanging}
                   >
-                    <span className="answer-index">{String.fromCharCode(65 + index)}</span>
+                    <span className="answer-index">
+                      {String.fromCharCode(65 + index)}
+                    </span>
+
                     <span>{option}</span>
-                    <span className="answer-arrow" aria-hidden="true">→</span>
+
+                    <span
+                      className="answer-arrow"
+                      aria-hidden="true"
+                    >
+                      →
+                    </span>
                   </button>
                 ))}
               </div>
             </div>
           ) : (
-  <div className="calendly-placeholder">
-    <div className="success-mark">✓</div>
+            <div className="calendly-placeholder">
+              <div className="success-mark">✓</div>
 
-    <p className="modal-kicker">ASSESSMENT COMPLETE</p>
+              <p className="modal-kicker">
+                ASSESSMENT COMPLETE
+              </p>
 
+              <h2>Book Your Appointment</h2>
 
-    <button
-      className="secondary-button"
-      onClick={goBackToLanding}
-    >
-      BACK TO LANDING <span aria-hidden="true">→</span>
-    </button>
-  </div>
-)}
+              <p className="question-hint">
+                Choose your preferred counselling centre to book
+                your appointment.
+              </p>
+
+              <label className="college-select-label">
+                <span>Choose your college</span>
+
+                <select
+                  name="college"
+                  value={selectedCollege}
+                  onChange={(event) =>
+                    setSelectedCollege(event.target.value)
+                  }
+                >
+                  <option value="" disabled>
+                    Select college
+                  </option>
+
+                  {collegeOptions.map((college) => (
+                    <option key={college} value={college}>
+                      {college}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              {selectedCollege && (
+                <button
+                  type="button"
+                  className="primary-button"
+                  onClick={handleCollegeSubmit}
+                >
+                  BOOK YOUR APPOINTMENT
+                  <span aria-hidden="true">→</span>
+                </button>
+              )}
+
+            
+            </div>
+          )}
         </section>
       )}
     </main>
