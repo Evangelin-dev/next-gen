@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: "https://app.thebotcrm.com/api",
   headers: {
     "Content-Type": "application/json",
   },
