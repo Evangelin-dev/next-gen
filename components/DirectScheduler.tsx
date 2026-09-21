@@ -19,7 +19,7 @@ type BookingResponse = {
 
 const WHATSAPP_NUMBER = "919892969648";
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi, my meeting has been booked. Please confirm the details.")}`;
-const BUSINESS_URL = process.env.NEXT_PUBLIC_BUSINESS_URL || "https://thebotagency.com";
+const BUSINESS_URL = "https://nextgenrevision.com";
 
 const roleOptions = [
   "Factory owner",

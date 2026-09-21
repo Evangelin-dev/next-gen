@@ -96,7 +96,7 @@ export default function LandingPage() {
       </section>
 
       <footer className="site-footer">
-        {/* <p>© The Bot 2026</p> */}
+        { <p>© Next Genre Visions 2026</p> }
         <nav aria-label="Footer links">
           <a href="/privacy-policy">Privacy Policy</a>
           <a href="/terms">Terms</a>
@@ -133,43 +133,7 @@ export default function LandingPage() {
                 </select>
               </label>
               </div>
-              <label>
-  <span>Explore your counselling centre*</span>
-
-  <select name="college" required defaultValue="">
-    <option value="" disabled>
-      Select your college
-    </option>
-
-    <option value="Manohar Joshi, Sion">
-      Manohar Joshi, Sion
-    </option>
-
-    <option value="Mumbai Management, Mira Road">
-      Mumbai Management, Mira Road
-    </option>
-
-    <option value="Indo Scot, Thane">
-      Indo Scot, Thane
-    </option>
-
-    <option value="Goenka, Dombivali">
-      Goenka, Dombivali
-    </option>
-
-    <option value="Vivekanand, Kopar Khairane">
-      Vivekanand, Kopar Khairane
-    </option>
-
-    <option value="Indala, Kalyan">
-      Indala, Kalyan
-    </option>
-
-    <option value="Online Campus">
-      Online Campus
-    </option>
-  </select>
-</label>
+          
               
               {error && <p className="form-error" role="alert">{error}</p>}
               <button className="primary-button submit-button" type="submit" disabled={isSubmitting}>{isSubmitting ? "SUBMITTING..." : "WATCH NOW FOR FREE"} <span aria-hidden="true">→</span></button>

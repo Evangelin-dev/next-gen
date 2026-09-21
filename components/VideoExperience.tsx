@@ -499,14 +499,12 @@ export default function VideoExperience() {
                     <h2>Book Your Appointment</h2>
 
                     <p className="question-hint">
-                      Choose your preferred counselling centre and
-                      date for your counselling session.
+                      Choose nearby counselling centre.
                     </p>
 
                     {!isCollegeSaved ? (
                       <>
                         <label className="college-select-label">
-                          <span>Choose your college</span>
 
                           <select
                             name="college"
