@@ -9,6 +9,7 @@ import "react-phone-number-input/style.css";
 import apiClient from "../lib/api";
 
 
+
 export default function LandingPage() {
   const router = useRouter();
   const [isFormOpen, setIsFormOpen] = useState(false);

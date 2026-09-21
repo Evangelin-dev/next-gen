@@ -1,6 +1,8 @@
 "use client";
 
+import Script from "next/script";
 import Image from "next/image";
+import apiClient from "../lib/api";
 import React, {
   KeyboardEvent,
   useEffect,
@@ -13,7 +15,14 @@ type Question = {
   options: string[];
 };
 
-const WHATSAPP_NUMBER = "919167727792";
+function getTodayInCalendarTimezone() {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+}
 
 const collegeOptions = [
   "Manohar Joshi, Sion",
@@ -115,12 +124,22 @@ const questions: Question[] = [
 export default function VideoExperience() {
   const [isApplyVisible, setIsApplyVisible] = useState(false);
   const [isApplicationOpen, setIsApplicationOpen] = useState(false);
+
   const [questionIndex, setQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState("");
   const [isChanging, setIsChanging] = useState(false);
+
   const [isComplete, setIsComplete] = useState(false);
+  const [isCollegeSaved, setIsCollegeSaved] = useState(false);
+
   const [selectedCollege, setSelectedCollege] = useState("");
   const [answers, setAnswers] = useState<Record<string, string>>({});
+
+  const [selectedDate, setSelectedDate] = useState("");
+
+  const [isBooking, setIsBooking] = useState(false);
+  const [bookingError, setBookingError] = useState("");
+  const [isBookingComplete, setIsBookingComplete] = useState(false);
 
   const questionRef = useRef<HTMLDivElement>(null);
 
@@ -145,11 +164,21 @@ export default function VideoExperience() {
 
   function openApplication() {
     setIsApplicationOpen(true);
+
     setQuestionIndex(0);
     setSelectedOption("");
+
     setIsComplete(false);
+    setIsCollegeSaved(false);
+
     setAnswers({});
     setSelectedCollege("");
+
+    setSelectedDate("");
+
+    setIsBooking(false);
+    setBookingError("");
+    setIsBookingComplete(false);
   }
 
   function chooseOption(option: string) {
@@ -185,20 +214,75 @@ export default function VideoExperience() {
     setIsChanging(false);
   }
 
-  function handleCollegeSubmit() {
+  async function handleCollegeSubmit() {
     if (!selectedCollege) return;
 
-    const message = `Hi, I would like to book an appointment with your counselling centre.
+    const studentId = localStorage.getItem("studentId");
 
-College Name: ${selectedCollege}
+    if (!studentId) {
+      console.error("Student ID not found");
+      setBookingError("Student record not found. Please try again.");
+      return;
+    }
 
-Please share the available appointment details.`;
+    try {
+      setBookingError("");
 
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-      message
-    )}`;
+      await apiClient.patch(`/students/${studentId}/`, {
+        college: selectedCollege,
+        questionnaire_data: {
+          questions: questions.map((question) => ({
+            question: question.title,
+            answer: answers[question.title] || "",
+          })),
+        },
+      });
 
-    window.location.href = whatsappUrl;
+      setIsComplete(true);
+      setIsCollegeSaved(true);
+    } catch (error) {
+      console.error("Failed to save questionnaire:", error);
+      setBookingError(
+        "We could not save your details. Please try again."
+      );
+    }
+  }
+
+  async function confirmBooking() {
+    const studentId = localStorage.getItem("studentId");
+
+    if (!studentId) {
+      setBookingError("Student record not found.");
+      return;
+    }
+
+    if (!selectedCollege || !selectedDate) {
+      setBookingError("Please select college and date.");
+      return;
+    }
+
+    if (isBooking) return;
+
+    setIsBooking(true);
+    setBookingError("");
+
+    try {
+      await apiClient.patch(`/students/${studentId}/`, {
+        college: selectedCollege,
+        booking_date: selectedDate,
+        booking_time: "10:00 AM - 6:00 PM",
+      });
+
+      setIsBookingComplete(true);
+    } catch (error) {
+      console.error("Booking failed:", error);
+
+      setBookingError(
+        "Booking could not be saved. Please try again."
+      );
+    } finally {
+      setIsBooking(false);
+    }
   }
 
   function handleOptionKeyDown(
@@ -213,230 +297,372 @@ Please share the available appointment details.`;
 
   function goBackToLanding() {
     setIsApplicationOpen(false);
+
     setQuestionIndex(0);
     setSelectedOption("");
+
     setIsComplete(false);
+    setIsCollegeSaved(false);
+
     setAnswers({});
     setSelectedCollege("");
+
+    setSelectedDate("");
+
+    setIsBooking(false);
+    setBookingError("");
+    setIsBookingComplete(false);
+
     setIsApplyVisible(true);
   }
 
   const question = questions[questionIndex];
 
   return (
-    <main
-      className={`video-page ${
-        isApplicationOpen ? "application-mode" : ""
-      }`}
-    >
-      {!isApplicationOpen && (
-        <section className="video-content">
-          <Image
-            className="brand-mark"
-            src="/logo.png"
-            alt="The Bot"
-            width={652}
-            height={652}
-            priority
-          />
+    <>
+      {/* Wistia scripts */}
+      <Script
+        src="https://fast.wistia.com/player.js"
+        strategy="afterInteractive"
+      />
 
-          <p className="modal-kicker">FOR STUDENTS</p>
+      <Script
+        src="https://fast.wistia.com/embed/bw5idsqm6o.js"
+        type="module"
+        strategy="afterInteractive"
+      />
 
-          <h1>
-            How I Started Building My Career One Skill at a Time
-          </h1>
+      <main
+        className={`video-page ${
+          isApplicationOpen ? "application-mode" : ""
+        }`}
+      >
+        {!isApplicationOpen && (
+          <section className="video-content">
+            <Image
+              className="brand-mark"
+              src="/logo.png"
+              alt="The Bot"
+              width={652}
+              height={652}
+              priority
+            />
 
-          <p>
-            Watch this 1-minute video and discover how finding the right
-            skill can help you create a career path that works for you.
-          </p>
+            <p className="modal-kicker">FOR STUDENTS</p>
 
-          <div className="video-frame">
-            <video
-              className="landing-video"
-              controls
-              playsInline
-              preload="metadata"
-              onEnded={openApplication}
-            >
-              <source
-                src="/Next_Gener_Promo.mp4"
-                type="video/mp4"
-              />
-
-              Your browser does not support the video tag.
-            </video>
-          </div>
-
-          <p className="assessment-prompt">
-            Not sure which skill is right for you?
-            <br />
-            Take the quick assessment and discover where your strengths
-            may fit.
-          </p>
-
-          <div
-            className={`apply-reveal ${
-              isApplyVisible ? "is-visible" : ""
-            }`}
-          >
-            <button
-              className="primary-button apply-button"
-              onClick={openApplication}
-            >
-              TAKE THE QUICK ASSESSMENT
-              <span aria-hidden="true">→</span>
-            </button>
-          </div>
-        </section>
-      )}
-
-      {isApplicationOpen && (
-        <section
-          className="application-shell"
-          aria-labelledby="application-title"
-        >
-          <div className="application-topline" />
-
-          <button
-            type="button"
-            className="landing-back-button"
-            onClick={goBackToLanding}
-            aria-label="Back to landing page"
-          >
-            ← Back to landing
-          </button>
-
-          <p className="modal-kicker">
-            STUDENT CAREER ASSESSMENT
-          </p>
-
-          {!isComplete && (
-            <h1 id="application-title">
-              Discover Which Skills Suit You Best
+            <h1>
+              How I Started Building My Career One Skill at a Time
             </h1>
-          )}
 
-          {!isComplete ? (
+            <p>
+              Watch this 1-minute video and discover how finding the
+              right skill can help you create a career path that works
+              for you.
+            </p>
+
+            {/* Wistia Video */}
+            <div className="video-frame">
+              <wistia-player
+                media-id="bw5idsqm6o"
+                aspect="1.7777777777777777"
+              />
+            </div>
+
+            <p className="assessment-prompt">
+              Not sure which skill is right for you?
+              <br />
+              Take the quick assessment and discover where your
+              strengths may fit.
+            </p>
+
             <div
-              className={`question-card ${
-                isChanging ? "is-changing" : ""
+              className={`apply-reveal ${
+                isApplyVisible ? "is-visible" : ""
               }`}
-              ref={questionRef}
-              tabIndex={-1}
             >
-              <div className="question-meta">
-                <span>{questionIndex + 1}</span>
-                <strong>of {questions.length}</strong>
-              </div>
+              <button
+                type="button"
+                className="primary-button apply-button"
+                onClick={openApplication}
+              >
+                TAKE THE QUICK ASSESSMENT
+                <span aria-hidden="true">→</span>
+              </button>
+            </div>
+          </section>
+        )}
 
-              <div className="progress-track">
-                <span
-                  style={{
-                    width: `${
-                      ((questionIndex + 1) /
-                        questions.length) *
-                      100
-                    }%`,
-                  }}
-                />
-              </div>
+        {isApplicationOpen && (
+          <section
+            className="application-shell"
+            aria-labelledby="application-title"
+          >
+            <div className="application-topline" />
 
-              <p className="question-number">
-                QUESTION {questionIndex + 1}
-              </p>
+            <button
+              type="button"
+              className="landing-back-button"
+              onClick={goBackToLanding}
+              aria-label="Back to landing page"
+            >
+              ← Back to landing
+            </button>
 
-              <h2>{question.title}</h2>
+            <p className="modal-kicker">
+              STUDENT CAREER ASSESSMENT
+            </p>
 
-              <p className="question-hint">
-                Select one answer to continue. Press Enter after
-                choosing.
-              </p>
+            {!isComplete && (
+              <h1 id="application-title">
+                Discover Which Skills Suit You Best
+              </h1>
+            )}
 
-              <div className="answer-list">
-                {question.options.map((option, index) => (
-                  <button
-                    className={`answer-button ${
-                      selectedOption === option
-                        ? "is-selected"
-                        : ""
-                    }`}
-                    key={option}
-                    onClick={() => chooseOption(option)}
-                    onKeyDown={(event) =>
-                      handleOptionKeyDown(event, option)
-                    }
-                    disabled={isChanging}
-                  >
-                    <span className="answer-index">
-                      {String.fromCharCode(65 + index)}
-                    </span>
+            {!isComplete ? (
+              <div
+                className={`question-card ${
+                  isChanging ? "is-changing" : ""
+                }`}
+                ref={questionRef}
+                tabIndex={-1}
+              >
+                <div className="question-meta">
+                  <span>{questionIndex + 1}</span>
+                  <strong>of {questions.length}</strong>
+                </div>
 
-                    <span>{option}</span>
+                <div className="progress-track">
+                  <span
+                    style={{
+                      width: `${
+                        ((questionIndex + 1) /
+                          questions.length) *
+                        100
+                      }%`,
+                    }}
+                  />
+                </div>
 
-                    <span
-                      className="answer-arrow"
-                      aria-hidden="true"
+                <p className="question-number">
+                  QUESTION {questionIndex + 1}
+                </p>
+
+                <h2>{question.title}</h2>
+
+                <p className="question-hint">
+                  Select one answer to continue. Press Enter after
+                  choosing.
+                </p>
+
+                <div className="answer-list">
+                  {question.options.map((option, index) => (
+                    <button
+                      type="button"
+                      className={`answer-button ${
+                        selectedOption === option
+                          ? "is-selected"
+                          : ""
+                      }`}
+                      key={option}
+                      onClick={() => chooseOption(option)}
+                      onKeyDown={(event) =>
+                        handleOptionKeyDown(event, option)
+                      }
+                      disabled={isChanging}
                     >
-                      →
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="calendly-placeholder">
-              <div className="success-mark">✓</div>
+                      <span className="answer-index">
+                        {String.fromCharCode(65 + index)}
+                      </span>
 
-              <p className="modal-kicker">
-                ASSESSMENT COMPLETE
-              </p>
+                      <span>{option}</span>
 
-              <h2>Book Your Appointment</h2>
-
-              <p className="question-hint">
-                Choose your preferred counselling centre to book
-                your appointment.
-              </p>
-
-              <label className="college-select-label">
-                <span>Choose your college</span>
-
-                <select
-                  name="college"
-                  value={selectedCollege}
-                  onChange={(event) =>
-                    setSelectedCollege(event.target.value)
-                  }
-                >
-                  <option value="" disabled>
-                    Select college
-                  </option>
-
-                  {collegeOptions.map((college) => (
-                    <option key={college} value={college}>
-                      {college}
-                    </option>
+                      <span
+                        className="answer-arrow"
+                        aria-hidden="true"
+                      >
+                        →
+                      </span>
+                    </button>
                   ))}
-                </select>
-              </label>
+                </div>
+              </div>
+            ) : (
+              <div className="calendly-placeholder">
+                {!isBookingComplete ? (
+                  <>
+                    <div className="success-mark">✓</div>
 
-              {selectedCollege && (
-                <button
-                  type="button"
-                  className="primary-button"
-                  onClick={handleCollegeSubmit}
-                >
-                  BOOK YOUR APPOINTMENT
-                  <span aria-hidden="true">→</span>
-                </button>
-              )}
+                    <p className="modal-kicker">
+                      ASSESSMENT COMPLETE
+                    </p>
 
-            
-            </div>
-          )}
-        </section>
-      )}
-    </main>
+                    <h2>Book Your Appointment</h2>
+
+                    <p className="question-hint">
+                      Choose your preferred counselling centre and
+                      date for your counselling session.
+                    </p>
+
+                    {!isCollegeSaved ? (
+                      <>
+                        <label className="college-select-label">
+                          <span>Choose your college</span>
+
+                          <select
+                            name="college"
+                            value={selectedCollege}
+                            onChange={(event) => {
+                              setSelectedCollege(event.target.value);
+                              setBookingError("");
+                            }}
+                          >
+                            <option value="" disabled>
+                              Select college
+                            </option>
+
+                            {collegeOptions.map((college) => (
+                              <option
+                                key={college}
+                                value={college}
+                              >
+                                {college}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+
+                        {selectedCollege && (
+                          <button
+                            type="button"
+                            className="primary-button book-button"
+                            onClick={() =>
+                              void handleCollegeSubmit()
+                            }
+                          >
+                            CONTINUE
+                            <span aria-hidden="true">→</span>
+                          </button>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <div className="available-time-box">
+                          <p className="modal-kicker">
+                            AVAILABLE TIME
+                          </p>
+
+                          <h3>10:00 AM - 6:00 PM</h3>
+
+                          <p className="question-hint">
+                            Counselling sessions are available
+                            between 10:00 AM and 6:00 PM.
+                          </p>
+                        </div>
+
+                        <div className="calendar-controls">
+                          <label htmlFor="counselling-date">
+                            Choose your preferred date
+                          </label>
+
+                          <input
+                            id="counselling-date"
+                            type="date"
+                            value={selectedDate}
+                            min={getTodayInCalendarTimezone()}
+                            onChange={(event) => {
+                              setSelectedDate(event.target.value);
+                              setBookingError("");
+                            }}
+                          />
+                        </div>
+
+                        {bookingError && (
+                          <p
+                            className="form-error"
+                            role="alert"
+                          >
+                            {bookingError}
+                          </p>
+                        )}
+
+                        <button
+                          type="button"
+                          className="primary-button book-button"
+                          disabled={!selectedDate || isBooking}
+                          onClick={() => void confirmBooking()}
+                        >
+                          {isBooking
+                            ? "SAVING..."
+                            : "CONFIRM DATE"}
+
+                          <span aria-hidden="true">→</span>
+                        </button>
+                      </>
+                    )}
+
+                    {bookingError && !isCollegeSaved && (
+                      <p
+                        className="form-error"
+                        role="alert"
+                      >
+                        {bookingError}
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <div className="schedule-result">
+                    <div className="success-mark">✓</div>
+
+                    <p className="modal-kicker">
+                      APPOINTMENT BOOKED
+                    </p>
+
+                    <h2>You're all set!</h2>
+
+                    <p className="question-hint">
+                      Your counselling appointment has been
+                      successfully saved.
+                    </p>
+
+                    <div className="booking-summary">
+                    <p>
+                      <strong>College:</strong>{" "}
+                      {selectedCollege}
+                    </p>
+
+                    <p>
+                      <strong>Date:</strong>{" "}
+                      {selectedDate}
+                    </p>
+
+                    <p>
+                      <strong>Available Time:</strong>{" "}
+                      10:00 AM - 6:00 PM
+                    </p>
+
+                     <p>
+              <strong>WhatsApp:</strong>{" "}
+              <a
+                href="https://wa.me/919167727792"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  color: "#25D366",
+                  textDecoration: "underline",
+                  cursor: "pointer",
+                }}
+              >
+                +91 91677 27792
+              </a>
+            </p>
+                  </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </section>
+        )}
+      </main>
+    </>
   );
 }
