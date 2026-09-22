@@ -6,14 +6,41 @@ declare global {
   }
 }
 
-export function trackFacebookEvent(eventName: string, params?: Record<string, unknown>) {
-  if (typeof window === "undefined" || typeof window.fbq !== "function") return;
+export function trackFacebookEvent(
+  eventName: string,
+  params?: Record<string, unknown>,
+  eventId?: string
+) {
+  if (typeof window === "undefined" || typeof window.fbq !== "function") {
+    return;
+  }
 
-  const standardEvents = new Set(["PageView", "Lead", "Schedule"]);
-  const trackMethod = standardEvents.has(eventName) ? "track" : "trackCustom";
+  const standardEvents = new Set([
+    "PageView",
+    "Lead",
+    "Schedule",
+  ]);
+
+  const trackMethod = standardEvents.has(eventName)
+    ? "track"
+    : "trackCustom";
+
+  if (params && eventId) {
+    window.fbq(trackMethod, eventName, params, {
+      eventID: eventId,
+    });
+    return;
+  }
 
   if (params) {
     window.fbq(trackMethod, eventName, params);
+    return;
+  }
+
+  if (eventId) {
+    window.fbq(trackMethod, eventName, {}, {
+      eventID: eventId,
+    });
     return;
   }
 
