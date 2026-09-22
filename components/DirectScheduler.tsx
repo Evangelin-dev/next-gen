@@ -112,6 +112,7 @@ export default function DirectScheduler({ initialInterestId }: DirectSchedulerPr
     }
 
     const isQualified = ["Factory owner", "Exporter", "Manufacturer"].includes(role);
+    const eventId = crypto.randomUUID();
     setError("");
     setIsSubmitting(true);
     try {
@@ -123,6 +124,8 @@ export default function DirectScheduler({ initialInterestId }: DirectSchedulerPr
           phone,
           role,
           is_qualified: isQualified,
+          event_id: eventId,
+          event_name: "Lead",
         });
       } else {
         const { data } = await apiClient.post<{ id: string }>("/interests", {
@@ -132,6 +135,8 @@ export default function DirectScheduler({ initialInterestId }: DirectSchedulerPr
           role,
           other_role: role === "None of the above" ? null : null,
           is_qualified: isQualified,
+          event_id: eventId,
+          event_name: "Lead",
         });
         currentInterestId = data.id;
         setInterestId(data.id);
@@ -146,7 +151,7 @@ export default function DirectScheduler({ initialInterestId }: DirectSchedulerPr
       trackFacebookEvent("Lead", {
         content_name: "Export Growth Call Form",
         status: isQualified ? "qualified" : "disqualified",
-      });
+      }, eventId);
 
       setStage(isQualified ? "calendar" : "disqualified");
     } catch (requestError) {
@@ -162,11 +167,14 @@ export default function DirectScheduler({ initialInterestId }: DirectSchedulerPr
     setIsBooking(true);
     setError("");
     try {
+      const eventId = crypto.randomUUID();
       const response = await apiClient.post<BookingResponse>("/google/calendar/booking", {
         interest_id: interestId,
         start_time: selectedSlot.start,
         end_time: selectedSlot.end,
         timezone: "Asia/Kolkata",
+        event_id: eventId,
+        event_name: "Schedule",
       });
       await apiClient.patch(`/interests/${interestId}/update`, {
         meeting_date: response.data.start_time || selectedSlot.start,
@@ -178,7 +186,7 @@ export default function DirectScheduler({ initialInterestId }: DirectSchedulerPr
         content_name: "Export Growth Call",
         start_time: response.data.start_time || selectedSlot.start,
         status: isRescheduling ? "rescheduled" : "booked",
-      });
+      }, eventId);
 
       setStage("complete");
     } catch (requestError) {
