@@ -7,7 +7,7 @@ import axios from "axios";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import apiClient from "../lib/api";
-
+import { trackFacebookEvent } from "../lib/facebookPixel";
 
 
 export default function LandingPage() {
@@ -45,9 +45,16 @@ export default function LandingPage() {
     setIsSubmitting(true);
     try {
       const { data } = await apiClient.post("/students/", payload);
+
       localStorage.setItem("studentId", String(data.id));
       localStorage.setItem("isQualified", String(isQualified));
-    
+
+      // Meta Pixel - Lead Event
+      trackFacebookEvent("Lead", {
+        content_name: "Career Assessment Form",
+        current_role: formData.get("currentRole"),
+      });
+
       router.push("/video");
     } catch (requestError) {
       if (axios.isAxiosError(requestError) && !requestError.response) {

@@ -6,6 +6,7 @@ import axios from "axios";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import apiClient from "../lib/api";
+import { trackFacebookEvent } from "../lib/facebookPixel";
 
 type CalendarSlot = {
   start: string;
@@ -137,8 +138,16 @@ export default function DirectScheduler({ initialInterestId }: DirectSchedulerPr
       }
 
       if (!currentInterestId) throw new Error("Missing CRM lead id.");
+
       localStorage.setItem("interestId", currentInterestId);
       localStorage.setItem("isQualified", String(isQualified));
+
+      // Meta Pixel - Lead Event
+      trackFacebookEvent("Lead", {
+        content_name: "Export Growth Call Form",
+        status: isQualified ? "qualified" : "disqualified",
+      });
+
       setStage(isQualified ? "calendar" : "disqualified");
     } catch (requestError) {
       setError(getRequestError(requestError, "We could not save your details. Please try again."));
@@ -164,6 +173,13 @@ export default function DirectScheduler({ initialInterestId }: DirectSchedulerPr
         status: isRescheduling ? "meeting_rescheduled" : "meeting_booked",
       });
       setBooking(response.data);
+
+      trackFacebookEvent("Schedule", {
+        content_name: "Export Growth Call",
+        start_time: response.data.start_time || selectedSlot.start,
+        status: isRescheduling ? "rescheduled" : "booked",
+      });
+
       setStage("complete");
     } catch (requestError) {
       setError(axios.isAxiosError(requestError) && requestError.response?.status === 409
