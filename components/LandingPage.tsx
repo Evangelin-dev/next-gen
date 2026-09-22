@@ -30,16 +30,38 @@ export default function LandingPage() {
     }
 
     const formData = new FormData(event.currentTarget);
-    const payload = {
-      first_name: formData.get("firstName"),
-      email: formData.get("email"),
-      phone: phone || "",
-      role: formData.get("currentRole"),
-      college : formData.get("college") || "",
-      questionnaire_data: {
-        current_role: formData.get("currentRole"),
-      },
-    };
+
+const eventId = crypto.randomUUID();
+
+const getCookie = (name: string) => {
+  const match = document.cookie.match(
+    new RegExp("(^|;\\s*)" + name + "=([^;]*)")
+  );
+
+  return match ? decodeURIComponent(match[2]) : null;
+};
+
+const fbp = getCookie("_fbp");
+const fbc = getCookie("_fbc");
+
+const payload = {
+  first_name: formData.get("firstName"),
+  email: formData.get("email"),
+  phone: phone || "",
+  role: formData.get("currentRole"),
+  college: formData.get("college") || "",
+
+  questionnaire_data: {
+    current_role: formData.get("currentRole"),
+  },
+
+  // Meta CAPI
+  event_id: eventId,
+  event_name: "Lead",
+  event_source_url: window.location.href,
+  fbp,
+  fbc,
+};
 
     setError("");
     setIsSubmitting(true);
@@ -50,10 +72,14 @@ export default function LandingPage() {
       localStorage.setItem("isQualified", String(isQualified));
 
       // Meta Pixel - Lead Event
-      trackFacebookEvent("Lead", {
+      trackFacebookEvent(
+      "Lead",
+      {
         content_name: "Career Assessment Form",
         current_role: formData.get("currentRole"),
-      });
+      },
+      eventId
+    );
 
       router.push("/video");
     } catch (requestError) {
