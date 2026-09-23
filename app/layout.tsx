@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "The Bot | Export Growth Plan",
+  title: "nextgenrevisions | assess yourself",
   description: "Build a reliable export enquiry pipeline with The Bot.",
 };
 
