@@ -319,7 +319,7 @@ Your counselling appointment has been successfully saved.
 
 College: ${selectedCollege}
 Date: ${selectedDate}
-Selected Time: ${formattedTime}`;
+Booked Time: ${formattedTime}`;
 
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
       whatsappMessage
