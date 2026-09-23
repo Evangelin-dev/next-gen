@@ -16,6 +16,8 @@ type Question = {
   options: string[];
 };
 
+const WHATSAPP_NUMBER = "919167727792";
+
 function getTodayInCalendarTimezone() {
   return new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Kolkata",
@@ -25,6 +27,18 @@ function getTodayInCalendarTimezone() {
   }).format(new Date());
 }
 
+function formatSelectedTime(time: string) {
+  if (!time) return "";
+
+  const [hours, minutes] = time.split(":");
+  const hour = Number(hours);
+
+  const period = hour >= 12 ? "PM" : "AM";
+  const displayHour = hour % 12 || 12;
+
+  return `${displayHour}:${minutes} ${period}`;
+}
+
 const collegeOptions = [
   "Manohar Joshi, Sion",
   "Mumbai Management, Mira Road",
@@ -32,7 +46,6 @@ const collegeOptions = [
   "Goenka, Dombivali",
   "Vivekanand, Kopar Khairane",
   "Indala, Kalyan",
-  "Online Campus",
 ];
 
 const questions: Question[] = [
@@ -137,7 +150,7 @@ export default function VideoExperience() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
 
   const [selectedDate, setSelectedDate] = useState("");
-
+  const [selectedTime, setSelectedTime] = useState("");
   const [isBooking, setIsBooking] = useState(false);
   const [bookingError, setBookingError] = useState("");
   const [isBookingComplete, setIsBookingComplete] = useState(false);
@@ -153,14 +166,14 @@ export default function VideoExperience() {
   }, []);
 
   useEffect(() => {
-    if (isApplicationOpen) {
-      questionRef.current?.focus();
+    if (!isApplicationOpen) return;
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    }
+    questionRef.current?.focus();
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   }, [isApplicationOpen, questionIndex]);
 
   function openApplication() {
@@ -176,6 +189,7 @@ export default function VideoExperience() {
     setSelectedCollege("");
 
     setSelectedDate("");
+    setSelectedTime("");
 
     setIsBooking(false);
     setBookingError("");
@@ -222,12 +236,15 @@ export default function VideoExperience() {
 
     if (!studentId) {
       console.error("Student ID not found");
-      setBookingError("Student record not found. Please try again.");
+      setBookingError(
+        "Student record not found. Please try again."
+      );
       return;
     }
 
     try {
       setBookingError("");
+
       const eventId = crypto.randomUUID();
 
       await apiClient.patch(`/students/${studentId}/`, {
@@ -242,14 +259,22 @@ export default function VideoExperience() {
         event_name: "VideoCompletion",
       });
 
-      setIsComplete(true);
       setIsCollegeSaved(true);
-      trackFacebookEvent("VideoCompletion", {
-        content_name: "Career Questionnaire",
-        status: "completed",
-      }, eventId);
+
+      trackFacebookEvent(
+        "VideoCompletion",
+        {
+          content_name: "Career Questionnaire",
+          status: "completed",
+        },
+        eventId
+      );
     } catch (error) {
-      console.error("Failed to save questionnaire:", error);
+      console.error(
+        "Failed to save questionnaire:",
+        error
+      );
+
       setBookingError(
         "We could not save your details. Please try again."
       );
@@ -264,8 +289,20 @@ export default function VideoExperience() {
       return;
     }
 
-    if (!selectedCollege || !selectedDate) {
-      setBookingError("Please select college and date.");
+    if (!selectedCollege || !selectedDate || !selectedTime) {
+      setBookingError(
+        "Please select college, date and time."
+      );
+      return;
+    }
+
+    if (
+      selectedTime < "10:00" ||
+      selectedTime > "18:00"
+    ) {
+      setBookingError(
+        "Please select a time between 10:00 AM and 6:00 PM."
+      );
       return;
     }
 
@@ -274,25 +311,74 @@ export default function VideoExperience() {
     setIsBooking(true);
     setBookingError("");
 
+    const formattedTime =
+      formatSelectedTime(selectedTime);
+
+    const whatsappMessage = `You're all set!
+Your counselling appointment has been successfully saved.
+
+College: ${selectedCollege}
+Date: ${selectedDate}
+Selected Time: ${formattedTime}`;
+
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+      whatsappMessage
+    )}`;
+
+    // Open immediately because this is triggered by
+    // the user's button click.
+    const whatsappWindow = window.open(
+      "about:blank",
+      "_blank"
+    );
+
+    if (whatsappWindow) {
+      whatsappWindow.document.write(
+        "<p style='font-family:Arial;text-align:center;margin-top:50px;'>Opening WhatsApp...</p>"
+      );
+    }
+
     try {
       const eventId = crypto.randomUUID();
 
       await apiClient.patch(`/students/${studentId}/`, {
         college: selectedCollege,
         booking_date: selectedDate,
-        booking_time: "10:00 AM - 6:00 PM",
+        booking_time: formattedTime,
         event_id: eventId,
         event_name: "Schedule",
       });
 
       setIsBookingComplete(true);
-      trackFacebookEvent("Schedule", {
-        content_name: "Career Assessment Booking",
-        booking_date: selectedDate,
-        status: "booked",
-      }, eventId);
+
+      trackFacebookEvent(
+        "Schedule",
+        {
+          content_name: "Career Assessment Booking",
+          booking_date: selectedDate,
+          booking_time: formattedTime,
+          status: "booked",
+        },
+        eventId
+      );
+
+      // Booking successful → open WhatsApp
+      if (
+        whatsappWindow &&
+        !whatsappWindow.closed
+      ) {
+        whatsappWindow.location.href =
+          whatsappUrl;
+      }
     } catch (error) {
       console.error("Booking failed:", error);
+
+      if (
+        whatsappWindow &&
+        !whatsappWindow.closed
+      ) {
+        whatsappWindow.close();
+      }
 
       setBookingError(
         "Booking could not be saved. Please try again."
@@ -306,7 +392,10 @@ export default function VideoExperience() {
     event: KeyboardEvent<HTMLButtonElement>,
     option: string
   ) {
-    if (event.key === "Enter" || event.key === " ") {
+    if (
+      event.key === "Enter" ||
+      event.key === " "
+    ) {
       event.preventDefault();
       chooseOption(option);
     }
@@ -325,6 +414,7 @@ export default function VideoExperience() {
     setSelectedCollege("");
 
     setSelectedDate("");
+    setSelectedTime("");
 
     setIsBooking(false);
     setBookingError("");
@@ -351,7 +441,9 @@ export default function VideoExperience() {
 
       <main
         className={`video-page ${
-          isApplicationOpen ? "application-mode" : ""
+          isApplicationOpen
+            ? "application-mode"
+            : ""
         }`}
       >
         {!isApplicationOpen && (
@@ -365,16 +457,19 @@ export default function VideoExperience() {
               priority
             />
 
-            <p className="modal-kicker">FOR STUDENTS</p>
+            <p className="modal-kicker">
+              FOR STUDENTS
+            </p>
 
             <h1>
-              How I Started Building My Career One Skill at a Time
+              How I Started Building My Career One
+              Skill at a Time
             </h1>
 
             <p>
-              Watch this 1-minute video and discover how finding the
-              right skill can help you create a career path that works
-              for you.
+              Watch this 1-minute video and discover
+              how finding the right skill can help you
+              create a career path that works for you.
             </p>
 
             {/* Wistia Video */}
@@ -388,13 +483,15 @@ export default function VideoExperience() {
             <p className="assessment-prompt">
               Not sure which skill is right for you?
               <br />
-              Take the quick assessment and discover where your
-              strengths may fit.
+              Take the quick assessment and discover
+              where your strengths may fit.
             </p>
 
             <div
               className={`apply-reveal ${
-                isApplyVisible ? "is-visible" : ""
+                isApplyVisible
+                  ? "is-visible"
+                  : ""
               }`}
             >
               <button
@@ -403,7 +500,9 @@ export default function VideoExperience() {
                 onClick={openApplication}
               >
                 TAKE THE QUICK ASSESSMENT
-                <span aria-hidden="true">→</span>
+                <span aria-hidden="true">
+                  →
+                </span>
               </button>
             </div>
           </section>
@@ -438,14 +537,21 @@ export default function VideoExperience() {
             {!isComplete ? (
               <div
                 className={`question-card ${
-                  isChanging ? "is-changing" : ""
+                  isChanging
+                    ? "is-changing"
+                    : ""
                 }`}
                 ref={questionRef}
                 tabIndex={-1}
               >
                 <div className="question-meta">
-                  <span>{questionIndex + 1}</span>
-                  <strong>of {questions.length}</strong>
+                  <span>
+                    {questionIndex + 1}
+                  </span>
+
+                  <strong>
+                    of {questions.length}
+                  </strong>
                 </div>
 
                 <div className="progress-track">
@@ -467,82 +573,108 @@ export default function VideoExperience() {
                 <h2>{question.title}</h2>
 
                 <p className="question-hint">
-                  Select one answer to continue. Press Enter after
-                  choosing.
+                  Select one answer to continue.
+                  Press Enter after choosing.
                 </p>
 
                 <div className="answer-list">
-                  {question.options.map((option, index) => (
-                    <button
-                      type="button"
-                      className={`answer-button ${
-                        selectedOption === option
-                          ? "is-selected"
-                          : ""
-                      }`}
-                      key={option}
-                      onClick={() => chooseOption(option)}
-                      onKeyDown={(event) =>
-                        handleOptionKeyDown(event, option)
-                      }
-                      disabled={isChanging}
-                    >
-                      <span className="answer-index">
-                        {String.fromCharCode(65 + index)}
-                      </span>
-
-                      <span>{option}</span>
-
-                      <span
-                        className="answer-arrow"
-                        aria-hidden="true"
+                  {question.options.map(
+                    (option, index) => (
+                      <button
+                        type="button"
+                        className={`answer-button ${
+                          selectedOption ===
+                          option
+                            ? "is-selected"
+                            : ""
+                        }`}
+                        key={option}
+                        onClick={() =>
+                          chooseOption(option)
+                        }
+                        onKeyDown={(event) =>
+                          handleOptionKeyDown(
+                            event,
+                            option
+                          )
+                        }
+                        disabled={isChanging}
                       >
-                        →
-                      </span>
-                    </button>
-                  ))}
+                        <span className="answer-index">
+                          {String.fromCharCode(
+                            65 + index
+                          )}
+                        </span>
+
+                        <span>
+                          {option}
+                        </span>
+
+                        <span
+                          className="answer-arrow"
+                          aria-hidden="true"
+                        >
+                          →
+                        </span>
+                      </button>
+                    )
+                  )}
                 </div>
               </div>
             ) : (
               <div className="calendly-placeholder">
                 {!isBookingComplete ? (
                   <>
-                    <div className="success-mark">✓</div>
+                    <div className="success-mark">
+                      ✓
+                    </div>
 
                     <p className="modal-kicker">
                       ASSESSMENT COMPLETE
                     </p>
 
-                    <h2>Book Your Appointment</h2>
+                    <h2>
+                      Book Your Appointment
+                    </h2>
 
                     <p className="question-hint">
-                      Choose nearby counselling centre.
+                      Choose nearby counselling
+                      centre.
                     </p>
 
                     {!isCollegeSaved ? (
                       <>
                         <label className="college-select-label">
-
                           <select
                             name="college"
-                            value={selectedCollege}
+                            value={
+                              selectedCollege
+                            }
                             onChange={(event) => {
-                              setSelectedCollege(event.target.value);
+                              setSelectedCollege(
+                                event.target
+                                  .value
+                              );
                               setBookingError("");
                             }}
                           >
-                            <option value="" disabled>
+                            <option
+                              value=""
+                              disabled
+                            >
                               Select college
                             </option>
 
-                            {collegeOptions.map((college) => (
-                              <option
-                                key={college}
-                                value={college}
-                              >
-                                {college}
-                              </option>
-                            ))}
+                            {collegeOptions.map(
+                              (college) => (
+                                <option
+                                  key={college}
+                                  value={college}
+                                >
+                                  {college}
+                                </option>
+                              )
+                            )}
                           </select>
                         </label>
 
@@ -555,8 +687,19 @@ export default function VideoExperience() {
                             }
                           >
                             CONTINUE
-                            <span aria-hidden="true">→</span>
+                            <span aria-hidden="true">
+                              →
+                            </span>
                           </button>
+                        )}
+
+                        {bookingError && (
+                          <p
+                            className="form-error"
+                            role="alert"
+                          >
+                            {bookingError}
+                          </p>
                         )}
                       </>
                     ) : (
@@ -566,17 +709,21 @@ export default function VideoExperience() {
                             AVAILABLE TIME
                           </p>
 
-                          <h3>10:00 AM - 6:00 PM</h3>
+                          <h3>
+                            10:00 AM - 6:00 PM
+                          </h3>
 
                           <p className="question-hint">
-                            Counselling sessions are available
-                            between 10:00 AM and 6:00 PM.
+                            Counselling sessions are
+                            available between 10:00
+                            AM and 6:00 PM.
                           </p>
                         </div>
 
                         <div className="calendar-controls">
                           <label htmlFor="counselling-date">
-                            Choose your preferred date
+                            Choose your preferred
+                            date
                           </label>
 
                           <input
@@ -585,11 +732,39 @@ export default function VideoExperience() {
                             value={selectedDate}
                             min={getTodayInCalendarTimezone()}
                             onChange={(event) => {
-                              setSelectedDate(event.target.value);
+                              setSelectedDate(
+                                event.target.value
+                              );
+                              setSelectedTime("");
                               setBookingError("");
                             }}
                           />
                         </div>
+
+                        {selectedDate && (
+                          <div className="calendar-controls">
+                            <label htmlFor="counselling-time">
+                              Choose your preferred
+                              time
+                            </label>
+
+                            <input
+                              id="counselling-time"
+                              type="time"
+                              min="10:00"
+                              max="18:00"
+                              step="900"
+                              value={selectedTime}
+                              onChange={(event) => {
+                                setSelectedTime(
+                                  event.target
+                                    .value
+                                );
+                                setBookingError("");
+                              }}
+                            />
+                          </div>
+                        )}
 
                         {bookingError && (
                           <p
@@ -603,74 +778,97 @@ export default function VideoExperience() {
                         <button
                           type="button"
                           className="primary-button book-button"
-                          disabled={!selectedDate || isBooking}
-                          onClick={() => void confirmBooking()}
+                          disabled={
+                            !selectedDate ||
+                            !selectedTime ||
+                            isBooking
+                          }
+                          onClick={() =>
+                            void confirmBooking()
+                          }
                         >
                           {isBooking
                             ? "SAVING..."
-                            : "CONFIRM DATE"}
+                            : "CONFIRM APPOINTMENT"}
 
-                          <span aria-hidden="true">→</span>
+                          <span aria-hidden="true">
+                            →
+                          </span>
                         </button>
                       </>
-                    )}
-
-                    {bookingError && !isCollegeSaved && (
-                      <p
-                        className="form-error"
-                        role="alert"
-                      >
-                        {bookingError}
-                      </p>
                     )}
                   </>
                 ) : (
                   <div className="schedule-result">
-                    <div className="success-mark">✓</div>
+                    <div className="success-mark">
+                      ✓
+                    </div>
 
                     <p className="modal-kicker">
                       APPOINTMENT BOOKED
                     </p>
 
-                    <h2>You're all set!</h2>
+                    <h2>
+                      You're all set!
+                    </h2>
 
                     <p className="question-hint">
-                      Your counselling appointment has been
-                      successfully saved.
+                      Your counselling appointment
+                      has been successfully saved.
                     </p>
 
                     <div className="booking-summary">
-                    <p>
-                      <strong>College:</strong>{" "}
-                      {selectedCollege}
-                    </p>
+                      <p>
+                        <strong>
+                          College:
+                        </strong>{" "}
+                        {selectedCollege}
+                      </p>
 
-                    <p>
-                      <strong>Date:</strong>{" "}
-                      {selectedDate}
-                    </p>
+                      <p>
+                        <strong>
+                          Date:
+                        </strong>{" "}
+                        {selectedDate}
+                      </p>
 
-                    <p>
-                      <strong>Available Time:</strong>{" "}
-                      10:00 AM - 6:00 PM
-                    </p>
+                      <p>
+                        <strong>
+                          Selected Time:
+                        </strong>{" "}
+                        {formatSelectedTime(
+                          selectedTime
+                        )}
+                      </p>
 
-                     <p>
-              <strong>WhatsApp:</strong>{" "}
-              <a
-                href="https://wa.me/919167727792"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  color: "#25D366",
-                  textDecoration: "underline",
-                  cursor: "pointer",
-                }}
-              >
-                +91 91677 27792
-              </a>
-            </p>
-                  </div>
+                      <p>
+                        <strong>
+                          WhatsApp:
+                        </strong>{" "}
+                        <a
+                          href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+                            `You're all set!
+Your counselling appointment has been successfully saved.
+
+College: ${selectedCollege}
+Date: ${selectedDate}
+Selected Time: ${formatSelectedTime(
+                              selectedTime
+                            )}`
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            color: "#25D366",
+                            textDecoration:
+                              "underline",
+                            cursor: "pointer",
+                          }}
+                        >
+                          +91 91677 27792
+                        </a>
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
