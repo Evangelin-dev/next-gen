@@ -74,21 +74,21 @@ const questions: Question[] = [
   {
     title: "Which conversation would you enjoy having?",
     options: [
-      "“How can we make this brand go viral?”",
-      "“What kind of career would actually suit this person?”",
-      "“How can we make this real-estate project more attractive to buyers?”",
-      "“Why are sales falling, and how can we increase revenue?”",
-      "“How can we make the whole operation work better?”",
+      "How can we make this brand go viral?",
+      "What kind of career would actually suit this person?",
+      "How can we make this real-estate project more attractive to buyers?",
+      "Why are sales falling, and how can we increase revenue?",
+      "How can we make the whole operation work better?",
     ],
   },
   {
     title: "Which achievement would make you feel most proud?",
     options: [
-      "“I helped thousands of people discover this brand.”",
-      "“I helped someone find the right career direction.”",
-      "“I helped a major builder successfully promote their project.”",
-      "“I helped a business significantly increase its revenue.”",
-      "“I built the system that made everything work efficiently.”",
+      "I helped thousands of people discover this brand.",
+      "I helped someone find the right career direction.",
+      "I helped a major builder successfully promote their project.",
+      "I helped a business significantly increase its revenue.",
+      "I built the system that made everything work efficiently.",
     ],
   },
   {
@@ -105,11 +105,11 @@ const questions: Question[] = [
     title:
       "When you see a successful business, what are you most curious about?",
     options: [
-      "“How did they build such a strong online presence?”",
-      "“How did they find the right people for their team?”",
-      "“How did they build such a powerful brand?”",
-      "“How much revenue are they generating, and how can they grow further?”",
-      "“What systems are running behind this business?”",
+      "How did they build such a strong online presence?",
+      "How did they find the right people for their team?",
+      "How did they build such a powerful brand?",
+      "How much revenue are they generating, and how can they grow further?",
+      "What systems are running behind this business?",
     ],
   },
   {
