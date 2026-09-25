@@ -143,11 +143,11 @@ const payload = {
           <section className="form-modal" role="dialog" aria-modal="true" aria-labelledby="form-title">
             <button className="close-button" onClick={() => setIsFormOpen(false)} aria-label="Close form">×</button>
             <h2 id="form-title"> Enter your info below and get started. Find out which skill suits you best!</h2>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} autoComplete="off">
               <div className="form-grid">
                 <label><span>First name *</span><input name="firstName" type="text" placeholder="Enter your first name" required /></label>
                 <label><span>Work email *</span><input name="email" type="email" placeholder="Enter your work email" required /></label>
-                <label><span>Phone number *</span><PhoneInput name="phone" required defaultCountry="IN" value={phone} onChange={setPhone} placeholder="Enter your phone number" /></label>
+                <label><span>Phone number *</span><PhoneInput key="india-phone" name="phone" required defaultCountry="IN" countrySelectProps={{ autoComplete: "new-password", name: "phone-country" }} value={phone} onChange={setPhone} placeholder="Enter your phone number" /></label>
                 <label>
                 <span>What best describes you currently? *</span>
                 <select name="currentRole" required defaultValue="">

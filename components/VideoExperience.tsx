@@ -50,6 +50,19 @@ const collegeOptions = [
   "Online Campus",
 ];
 
+/* Available counselling time slots */
+const timeSlots = [
+    "10:00",
+    "11:00",
+    "12:00",
+    "13:00",
+    "14:00",
+    "15:00",
+    "16:00",
+    "17:00",
+    "18:00",
+];
+
 const questions: Question[] = [
   {
     title:
@@ -494,8 +507,8 @@ Booked Time: ${formattedTime}`;
 
             {/* QUESTION HEADER */}
             {!isComplete && (
-              <h1 id="application-title">
-                Discover Which Skills Suit You Best
+               <h1 id="application-title">
+                 Discover Which Skills Suit You Best
               </h1>
             )}
 
@@ -587,101 +600,104 @@ Booked Time: ${formattedTime}`;
             ) : (
               /* BOOKING */
               <div
-              className="calendly-placeholder"
-              style={{
-                width: "min(100%, 760px)",
-                margin: "16px auto 0",
-                padding: "42px 52px 46px",
-                boxSizing: "border-box",
-                textAlign: "center",
-              }}
-            >
+                className="calendly-placeholder"
+                style={{
+                  width: "min(100%, 760px)",
+                  margin: "16px auto 0",
+                  padding: "42px 52px 46px",
+                  boxSizing: "border-box",
+                  textAlign: "center",
+                }}
+              >
                 {!isBookingComplete ? (
                   <>
                     <div className="success-mark">
                       ✓
                     </div>
+
                     <p
-                        className="modal-kicker"
-                        style={{
-                          margin: "0 0 8px",
-                          letterSpacing: "0.18em",
-                        }}
-                      >
-                        NEXT STEP
-                      </p>
+                      className="modal-kicker"
+                      style={{
+                        margin: "0 0 8px",
+                        letterSpacing: "0.18em",
+                      }}
+                    >
+                      NEXT STEP
+                    </p>
 
-                      <h2
-                        style={{
-                          margin: "0 auto 12px",
-                          lineHeight: 1.2,
-                        }}
-                      >
-                        Book Your Counselling Session
-                      </h2>
+                    <h2
+                      style={{
+                        margin: "0 auto 12px",
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      Book Your Counselling Session
+                    </h2>
 
-                      <p
-                        className="question-hint"
-                        style={{
-                          maxWidth: "600px",
-                          margin: "0 auto 32px",
-                          lineHeight: 1.55,
-                        }}
-                      >
-                        Great job! Your assessment is complete.
-                        <br />
-                        Now choose a counselling centre and book a
-                        convenient time.
-                      </p>
+                    <p
+                      className="question-hint"
+                      style={{
+                        maxWidth: "600px",
+                        margin: "0 auto 32px",
+                        lineHeight: 1.55,
+                      }}
+                    >
+                      Great job! Your assessment is complete.
+                      <br />
+                      Now choose a counselling centre and book a
+                      convenient time.
+                    </p>
 
                     {/* COLLEGE */}
                     {!isCollegeSaved ? (
                       <>
                         <p
-                        className="question-number"
-                        style={{
-                          margin: "8px 0 8px",
-                          fontSize: "0.78rem",
-                          letterSpacing: "0.16em",
-                          lineHeight: 1.3,
-                        }}
-                      >
-                        1. SELECT COUNSELLING CENTRE
-                      </p>
+                          className="question-number"
+                          style={{
+                            margin: "8px 0 8px",
+                            fontSize: "0.78rem",
+                            letterSpacing: "0.16em",
+                            lineHeight: 1.3,
+                          }}
+                        >
+                          1. SELECT COUNSELLING CENTRE
+                        </p>
 
-                      <p
-                        className="question-hint"
-                        style={{
-                          margin: "0 auto 16px",
-                          lineHeight: 1.5,
-                        }}
-                      >
-                        Choose the counselling centre you'd like to visit.
-                      </p>
+                        <p
+                          className="question-hint"
+                          style={{
+                            margin: "0 auto 16px",
+                            lineHeight: 1.5,
+                          }}
+                        >
+                          Choose the counselling centre
+                          you'd like to visit.
+                        </p>
 
                         <label
-                              className="college-select-label"
-                              style={{
-                                display: "block",
-                                width: "min(100%, 520px)",
-                                margin: "0 auto",
-                              }}
-                            >
-                              <select
-                                name="college"
-                                value={selectedCollege}
-                                onChange={(event) => {
-                                  setSelectedCollege(event.target.value);
-                                  setBookingError("");
-                                }}
-                                style={{
-                                  width: "100%",
-                                  minHeight: "52px",
-                                  boxSizing: "border-box",
-                                  padding: "0 14px",
-                                }}
-                              >
-                          
+                          className="college-select-label"
+                          style={{
+                            display: "block",
+                            width: "min(100%, 520px)",
+                            margin: "0 auto",
+                          }}
+                        >
+                          <select
+                            name="college"
+                            value={selectedCollege}
+                            onChange={(event) => {
+                              setSelectedCollege(
+                                event.target.value
+                              );
+                              setBookingError("");
+                            }}
+                            style={{
+                              width: "100%",
+                              minHeight: "52px",
+                              boxSizing: "border-box",
+                              padding: "0 14px",
+                            }}
+                          >
                             <option
                               value=""
                               disabled
@@ -733,11 +749,25 @@ Booked Time: ${formattedTime}`;
                     ) : (
                       <>
                         {/* SELECTED COLLEGE */}
-                        <p className="question-number">
+                        <p
+                          className="question-number"
+                          style={{
+                            margin: "8px 0 8px",
+                            fontSize: "0.78rem",
+                            letterSpacing: "0.16em",
+                            lineHeight: 1.3,
+                          }}
+                        >
                           1. COUNSELLING CENTRE
                         </p>
 
-                        <p className="question-hint">
+                        <p
+                          className="question-hint"
+                          style={{
+                            margin: "0 auto 16px",
+                            lineHeight: 1.5,
+                          }}
+                        >
                           Selected centre:{" "}
                           <strong>
                             {selectedCollege}
@@ -746,23 +776,24 @@ Booked Time: ${formattedTime}`;
 
                         {/* DATE */}
                         <p
-                        className="question-number"
-                        style={{
-                          margin: "32px 0 10px",
-                          fontSize: "0.78rem",
-                          letterSpacing: "0.16em",
-                          lineHeight: 1.3,
-                        }}
-                      >
-                        2. CHOOSE YOUR DATE
-                      </p>
+                          className="question-number"
+                          style={{
+                            margin: "32px 0 10px",
+                            fontSize: "0.78rem",
+                            letterSpacing: "0.16em",
+                            lineHeight: 1.3,
+                          }}
+                        >
+                          2. CHOOSE YOUR DATE
+                        </p>
+
                         <div
-                                  className="calendar-controls"
-                                  style={{
-                                    width: "min(100%, 520px)",
-                                    margin: "0 auto 24px",
-                                  }}
-                                >
+                          className="calendar-controls"
+                          style={{
+                            width: "min(100%, 520px)",
+                            margin: "0 auto 24px",
+                          }}
+                        >
                           <label htmlFor="counselling-date">
                             Select a convenient date
                           </label>
@@ -779,99 +810,101 @@ Booked Time: ${formattedTime}`;
                               setSelectedTime("");
                               setBookingError("");
                             }}
+                            style={{
+                              width: "100%",
+                              minHeight: "52px",
+                              boxSizing: "border-box",
+                              padding: "0 14px",
+                            }}
                           />
                         </div>
 
-                        {/* TIME */}
+                        {/* TIME SLOTS */}
                         {selectedDate && (
                           <>
                             <p
-                            className="question-number"
-                            style={{
-                              margin: "28px 0 10px",
-                              fontSize: "0.78rem",
-                              letterSpacing: "0.16em",
-                              lineHeight: 1.3,
-                            }}
-                          >
-                            3. CHOOSE YOUR TIME
-                          </p>
+                              className="question-number"
+                              style={{
+                                margin: "28px 0 10px",
+                                fontSize: "0.78rem",
+                                letterSpacing: "0.16em",
+                                lineHeight: 1.3,
+                              }}
+                            >
+                              3. CHOOSE YOUR TIME
+                            </p>
 
-                            <div className="calendar-controls">
-                              <label htmlFor="counselling-time">
-                                Select a convenient
-                                30-minute slot
-                              </label>
+                            <p
+                              className="question-hint"
+                              style={{
+                                margin: "0 auto 18px",
+                                lineHeight: 1.5,
+                              }}
+                            >
+                              Select a convenient time
+                              for your session.
+                            </p>
 
-                              <select
-                                id="counselling-time"
-                                value={selectedTime}
-                                onChange={(event) => {
-                                  setSelectedTime(
-                                    event.target.value
+                            <div
+                              style={{
+                                width: "min(100%, 560px)",
+                                margin: "0 auto",
+                                display: "grid",
+                                gridTemplateColumns:
+                                  "repeat(auto-fit, minmax(140px, 1fr))",
+                                gap: "10px",
+                              }}
+                            >
+                              {timeSlots.map(
+                                (time) => {
+                                  const isSelected =
+                                    selectedTime ===
+                                    time;
+
+                                  return (
+                                    <button
+                                      key={time}
+                                      type="button"
+                                      onClick={() => {
+                                        setSelectedTime(
+                                          time
+                                        );
+                                        setBookingError(
+                                          ""
+                                        );
+                                      }}
+                                      style={{
+                                        minHeight: "48px",
+                                        padding:
+                                          "10px 12px",
+                                        border: isSelected
+                                          ? "1.5px solid #1298e8"
+                                          : "1px solid #cbdceb",
+                                        borderRadius:
+                                          "7px",
+                                        background:
+                                          isSelected
+                                            ? "#eef8ff"
+                                            : "#ffffff",
+                                        color:
+                                          isSelected
+                                            ? "#128fd6"
+                                            : "#111827",
+                                        fontWeight: 600,
+                                        fontSize: "15px",
+                                        cursor:
+                                          "pointer",
+                                        transition:
+                                          "all 0.2s ease",
+                                      }}
+                                    >
+                                      {formatSelectedTime(
+                                        time
+                                      )}
+                                    </button>
                                   );
-                                  setBookingError("");
-                                }}
-                              >
-                                <option
-                                  value=""
-                                  disabled
-                                >
-                                  Select time
-                                </option>
-
-                                <option value="10:00">
-                                  10:00 AM
-                                </option>
-                                <option value="10:30">
-                                  10:30 AM
-                                </option>
-                                <option value="11:00">
-                                  11:00 AM
-                                </option>
-                                <option value="11:30">
-                                  11:30 AM
-                                </option>
-                                <option value="12:00">
-                                  12:00 PM
-                                </option>
-                                <option value="12:30">
-                                  12:30 PM
-                                </option>
-                                <option value="13:00">
-                                  1:00 PM
-                                </option>
-                                <option value="13:30">
-                                  1:30 PM
-                                </option>
-                                <option value="14:00">
-                                  2:00 PM
-                                </option>
-                                <option value="14:30">
-                                  2:30 PM
-                                </option>
-                                <option value="15:00">
-                                  3:00 PM
-                                </option>
-                                <option value="15:30">
-                                  3:30 PM
-                                </option>
-                                <option value="16:00">
-                                  4:00 PM
-                                </option>
-                                <option value="16:30">
-                                  4:30 PM
-                                </option>
-                                <option value="17:00">
-                                  5:00 PM
-                                </option>
-                                <option value="17:30">
-                                  5:30 PM
-                                </option>
-                                <option value="18:00">
-                                  6:00 PM
-                                </option>
-                              </select>
+                                }
+                              )}
                             </div>
                           </>
                         )}
@@ -898,10 +931,14 @@ Booked Time: ${formattedTime}`;
                           onClick={() =>
                             void confirmBooking()
                           }
+                          style={{
+                            minHeight: "50px",
+                            margin: "28px auto 0",
+                          }}
                         >
                           {isBooking
                             ? "SAVING..."
-                            : "CONFIRM MY APPOINTMENT"}
+                            : "BOOK THIS TIME"}
 
                           <span aria-hidden="true">
                             →
@@ -992,4 +1029,3 @@ Selected Time: ${formatSelectedTime(
     </>
   );
 }
-
