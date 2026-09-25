@@ -4,6 +4,7 @@ import Script from "next/script";
 import Image from "next/image";
 import apiClient from "../lib/api";
 import { trackFacebookEvent } from "../lib/facebookPixel";
+
 import React, {
   KeyboardEvent,
   useEffect,
@@ -46,91 +47,56 @@ const collegeOptions = [
   "Goenka, Dombivali",
   "Vivekanand, Kopar Khairane",
   "Indala, Kalyan",
+  "Online Campus",
 ];
 
 const questions: Question[] = [
   {
     title:
-      "Imagine you are working in a company. Which activity sounds most exciting to you?",
+      "Imagine you are launching a new business. What would you enjoy doing most?",
     options: [
-      "Promoting the company online and getting people to notice the brand",
-      "Talking to people and helping them understand which career could suit them",
-      "Working with a well-known builder and helping market their projects",
-      "Finding ways to increase the company's sales and revenue",
-      "Working behind the scenes and making sure everything runs smoothly",
+      "Creating ideas, content and campaigns that get people's attention.",
+      "Talking to customers, understanding their needs and helping the business grow.",
     ],
   },
   {
     title:
-      "Someone gives you a new business. What would you naturally want to do first?",
+      "A business is getting visitors but not enough customers. Which challenge would interest you more?",
     options: [
-      "Create social media content and promote it digitally",
-      "Understand the people who might need its products or services",
-      "Find a way to make the brand look attractive and trustworthy",
-      "Find customers and figure out how to increase sales",
-      "Understand the systems and processes needed to run the business",
-    ],
-  },
-  {
-    title: "Which conversation would you enjoy having?",
-    options: [
-      "How can we make this brand go viral?",
-      "What kind of career would actually suit this person?",
-      "How can we make this real-estate project more attractive to buyers?",
-      "Why are sales falling, and how can we increase revenue?",
-      "How can we make the whole operation work better?",
-    ],
-  },
-  {
-    title: "Which achievement would make you feel most proud?",
-    options: [
-      "I helped thousands of people discover this brand.",
-      "I helped someone find the right career direction.",
-      "I helped a major builder successfully promote their project.",
-      "I helped a business significantly increase its revenue.",
-      "I built the system that made everything work efficiently.",
-    ],
-  },
-  {
-    title: "What kind of work environment attracts you?",
-    options: [
-      "Fast-moving, creative and digital",
-      "People-oriented, interactive and meaningful",
-      "Professional, client-facing and connected to major projects",
-      "Competitive, target-driven and focused on business growth",
-      "Structured, technical and behind the scenes",
+      "Finding better ways to attract the right audience and build the brand.",
+      "Finding out why people are not buying and improving sales.",
     ],
   },
   {
     title:
-      "When you see a successful business, what are you most curious about?",
+      "Which type of task would you naturally enjoy more?",
     options: [
-      "How did they build such a strong online presence?",
-      "How did they find the right people for their team?",
-      "How did they build such a powerful brand?",
-      "How much revenue are they generating, and how can they grow further?",
-      "What systems are running behind this business?",
-    ],
-  },
-  {
-    title: "Which statement sounds most like you?",
-    options: [
-      "I like getting attention. I enjoy communication, creativity and making people notice something.",
-      "I like understanding people. I enjoy listening, asking questions and helping people make decisions.",
-      "I like working with influential brands and people. I want exposure to established businesses and major projects.",
-      "I like making things grow. Targets, sales, revenue and business growth motivate me.",
-      "I like making things work. I prefer planning, systems, technology and execution behind the scenes.",
+      "Communicating with people, presenting ideas and building relationships.",
+      "Working with technology, systems, data and solving practical problems.",
     ],
   },
   {
     title:
-      "If you could become really good at ONE thing, which would you choose?",
+      "Which result would give you the most satisfaction?",
     options: [
-      "Digital Marketing",
-      "Counselling & Communication",
-      "Branding & Client Management",
-      "Sales & Business Growth",
-      "Technology & Operations",
+      "Seeing a campaign become popular and people connect with the brand.",
+      "Seeing a business gain more customers, sales and growth.",
+    ],
+  },
+  {
+    title:
+      "Which skill would you most like to become really good at?",
+    options: [
+      "Content, communication and digital marketing.",
+      "Sales, technology and business problem-solving.",
+    ],
+  },
+  {
+    title:
+      "If you joined a new company tomorrow, which role would you be more excited to try?",
+    options: [
+      "Helping with marketing, content, communication and brand building.",
+      "Helping with sales, technology, operations and business growth.",
     ],
   },
 ];
@@ -325,8 +291,6 @@ Booked Time: ${formattedTime}`;
       whatsappMessage
     )}`;
 
-    // Open immediately because this is triggered by
-    // the user's button click.
     const whatsappWindow = window.open(
       "about:blank",
       "_blank"
@@ -362,13 +326,11 @@ Booked Time: ${formattedTime}`;
         eventId
       );
 
-      // Booking successful → open WhatsApp
       if (
         whatsappWindow &&
         !whatsappWindow.closed
       ) {
-        whatsappWindow.location.href =
-          whatsappUrl;
+        whatsappWindow.location.href = whatsappUrl;
       }
     } catch (error) {
       console.error("Booking failed:", error);
@@ -434,7 +396,7 @@ Booked Time: ${formattedTime}`;
       />
 
       <Script
-        src="https://fast.wistia.com/embed/bw5idsqm6o.js"
+        src="https://fast.wistia.com/embed/9p3ex5dzmq.js"
         type="module"
         strategy="afterInteractive"
       />
@@ -446,6 +408,7 @@ Booked Time: ${formattedTime}`;
             : ""
         }`}
       >
+        {/* VIDEO PAGE */}
         {!isApplicationOpen && (
           <section className="video-content">
             <Image
@@ -458,7 +421,7 @@ Booked Time: ${formattedTime}`;
             />
 
             <p className="modal-kicker">
-              FOR STUDENTS
+              Student Career Discovery
             </p>
 
             <h1>
@@ -475,7 +438,7 @@ Booked Time: ${formattedTime}`;
             {/* Wistia Video */}
             <div className="video-frame">
               <wistia-player
-                media-id="bw5idsqm6o"
+                media-id="9p3ex5dzmq"
                 aspect="1.7777777777777777"
               />
             </div>
@@ -508,6 +471,7 @@ Booked Time: ${formattedTime}`;
           </section>
         )}
 
+        {/* ASSESSMENT */}
         {isApplicationOpen && (
           <section
             className="application-shell"
@@ -525,15 +489,17 @@ Booked Time: ${formattedTime}`;
             </button>
 
             <p className="modal-kicker">
-              STUDENT CAREER ASSESSMENT
+              Student Career Discovery
             </p>
 
+            {/* QUESTION HEADER */}
             {!isComplete && (
               <h1 id="application-title">
                 Discover Which Skills Suit You Best
               </h1>
             )}
 
+            {/* QUESTIONS */}
             {!isComplete ? (
               <div
                 className={`question-card ${
@@ -573,8 +539,8 @@ Booked Time: ${formattedTime}`;
                 <h2>{question.title}</h2>
 
                 <p className="question-hint">
-                  Select one answer to continue.
-                  Press Enter after choosing.
+                  Choose the option that feels most like
+                  you.
                 </p>
 
                 <div className="answer-list">
@@ -583,8 +549,7 @@ Booked Time: ${formattedTime}`;
                       <button
                         type="button"
                         className={`answer-button ${
-                          selectedOption ===
-                          option
+                          selectedOption === option
                             ? "is-selected"
                             : ""
                         }`}
@@ -606,9 +571,7 @@ Booked Time: ${formattedTime}`;
                           )}
                         </span>
 
-                        <span>
-                          {option}
-                        </span>
+                        <span>{option}</span>
 
                         <span
                           className="answer-arrow"
@@ -622,47 +585,108 @@ Booked Time: ${formattedTime}`;
                 </div>
               </div>
             ) : (
-              <div className="calendly-placeholder">
+              /* BOOKING */
+              <div
+              className="calendly-placeholder"
+              style={{
+                width: "min(100%, 760px)",
+                margin: "16px auto 0",
+                padding: "42px 52px 46px",
+                boxSizing: "border-box",
+                textAlign: "center",
+              }}
+            >
                 {!isBookingComplete ? (
                   <>
                     <div className="success-mark">
                       ✓
                     </div>
+                    <p
+                        className="modal-kicker"
+                        style={{
+                          margin: "0 0 8px",
+                          letterSpacing: "0.18em",
+                        }}
+                      >
+                        NEXT STEP
+                      </p>
 
-                    <p className="modal-kicker">
-                      ASSESSMENT COMPLETE
-                    </p>
+                      <h2
+                        style={{
+                          margin: "0 auto 12px",
+                          lineHeight: 1.2,
+                        }}
+                      >
+                        Book Your Counselling Session
+                      </h2>
 
-                    <h2>
-                      Book Your Appointment
-                    </h2>
+                      <p
+                        className="question-hint"
+                        style={{
+                          maxWidth: "600px",
+                          margin: "0 auto 32px",
+                          lineHeight: 1.55,
+                        }}
+                      >
+                        Great job! Your assessment is complete.
+                        <br />
+                        Now choose a counselling centre and book a
+                        convenient time.
+                      </p>
 
-                    <p className="question-hint">
-                      Choose nearby counselling
-                      centre.
-                    </p>
-
+                    {/* COLLEGE */}
                     {!isCollegeSaved ? (
                       <>
-                        <label className="college-select-label">
-                          <select
-                            name="college"
-                            value={
-                              selectedCollege
-                            }
-                            onChange={(event) => {
-                              setSelectedCollege(
-                                event.target
-                                  .value
-                              );
-                              setBookingError("");
-                            }}
-                          >
+                        <p
+                        className="question-number"
+                        style={{
+                          margin: "8px 0 8px",
+                          fontSize: "0.78rem",
+                          letterSpacing: "0.16em",
+                          lineHeight: 1.3,
+                        }}
+                      >
+                        1. SELECT COUNSELLING CENTRE
+                      </p>
+
+                      <p
+                        className="question-hint"
+                        style={{
+                          margin: "0 auto 16px",
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        Choose the counselling centre you'd like to visit.
+                      </p>
+
+                        <label
+                              className="college-select-label"
+                              style={{
+                                display: "block",
+                                width: "min(100%, 520px)",
+                                margin: "0 auto",
+                              }}
+                            >
+                              <select
+                                name="college"
+                                value={selectedCollege}
+                                onChange={(event) => {
+                                  setSelectedCollege(event.target.value);
+                                  setBookingError("");
+                                }}
+                                style={{
+                                  width: "100%",
+                                  minHeight: "52px",
+                                  boxSizing: "border-box",
+                                  padding: "0 14px",
+                                }}
+                              >
+                          
                             <option
                               value=""
                               disabled
                             >
-                              Select college
+                              Select counselling centre
                             </option>
 
                             {collegeOptions.map(
@@ -682,11 +706,15 @@ Booked Time: ${formattedTime}`;
                           <button
                             type="button"
                             className="primary-button book-button"
+                            style={{
+                              minHeight: "50px",
+                              margin: "24px auto 0",
+                            }}
                             onClick={() =>
                               void handleCollegeSubmit()
                             }
                           >
-                            CONTINUE
+                            CONTINUE TO DATE & TIME
                             <span aria-hidden="true">
                               →
                             </span>
@@ -704,26 +732,39 @@ Booked Time: ${formattedTime}`;
                       </>
                     ) : (
                       <>
-                        <div className="available-time-box">
-                          <p className="modal-kicker">
-                            AVAILABLE TIME
-                          </p>
+                        {/* SELECTED COLLEGE */}
+                        <p className="question-number">
+                          1. COUNSELLING CENTRE
+                        </p>
 
-                          <h3>
-                            10:00 AM - 6:00 PM
-                          </h3>
+                        <p className="question-hint">
+                          Selected centre:{" "}
+                          <strong>
+                            {selectedCollege}
+                          </strong>
+                        </p>
 
-                          <p className="question-hint">
-                            Counselling sessions are
-                            available between 10:00
-                            AM and 6:00 PM.
-                          </p>
-                        </div>
-
-                        <div className="calendar-controls">
+                        {/* DATE */}
+                        <p
+                        className="question-number"
+                        style={{
+                          margin: "32px 0 10px",
+                          fontSize: "0.78rem",
+                          letterSpacing: "0.16em",
+                          lineHeight: 1.3,
+                        }}
+                      >
+                        2. CHOOSE YOUR DATE
+                      </p>
+                        <div
+                                  className="calendar-controls"
+                                  style={{
+                                    width: "min(100%, 520px)",
+                                    margin: "0 auto 24px",
+                                  }}
+                                >
                           <label htmlFor="counselling-date">
-                            Choose your preferred
-                            date
+                            Select a convenient date
                           </label>
 
                           <input
@@ -741,45 +782,101 @@ Booked Time: ${formattedTime}`;
                           />
                         </div>
 
+                        {/* TIME */}
                         {selectedDate && (
-  <div className="calendar-controls">
-    <label htmlFor="counselling-time">
-      Choose your preferred time
-    </label>
+                          <>
+                            <p
+                            className="question-number"
+                            style={{
+                              margin: "28px 0 10px",
+                              fontSize: "0.78rem",
+                              letterSpacing: "0.16em",
+                              lineHeight: 1.3,
+                            }}
+                          >
+                            3. CHOOSE YOUR TIME
+                          </p>
 
-    <select
-      id="counselling-time"
-      value={selectedTime}
-      onChange={(event) => {
-        setSelectedTime(event.target.value);
-        setBookingError("");
-      }}
-    >
-      <option value="" disabled>
-        Select time
-      </option>
+                            <div className="calendar-controls">
+                              <label htmlFor="counselling-time">
+                                Select a convenient
+                                30-minute slot
+                              </label>
 
-      <option value="10:00">10:00 AM</option>
-      <option value="10:30">10:30 AM</option>
-      <option value="11:00">11:00 AM</option>
-      <option value="11:30">11:30 AM</option>
-      <option value="12:00">12:00 PM</option>
-      <option value="12:30">12:30 PM</option>
-      <option value="13:00">1:00 PM</option>
-      <option value="13:30">1:30 PM</option>
-      <option value="14:00">2:00 PM</option>
-      <option value="14:30">2:30 PM</option>
-      <option value="15:00">3:00 PM</option>
-      <option value="15:30">3:30 PM</option>
-      <option value="16:00">4:00 PM</option>
-      <option value="16:30">4:30 PM</option>
-      <option value="17:00">5:00 PM</option>
-      <option value="17:30">5:30 PM</option>
-      <option value="18:00">6:00 PM</option>
-    </select>
-  </div>
-)}
+                              <select
+                                id="counselling-time"
+                                value={selectedTime}
+                                onChange={(event) => {
+                                  setSelectedTime(
+                                    event.target.value
+                                  );
+                                  setBookingError("");
+                                }}
+                              >
+                                <option
+                                  value=""
+                                  disabled
+                                >
+                                  Select time
+                                </option>
 
+                                <option value="10:00">
+                                  10:00 AM
+                                </option>
+                                <option value="10:30">
+                                  10:30 AM
+                                </option>
+                                <option value="11:00">
+                                  11:00 AM
+                                </option>
+                                <option value="11:30">
+                                  11:30 AM
+                                </option>
+                                <option value="12:00">
+                                  12:00 PM
+                                </option>
+                                <option value="12:30">
+                                  12:30 PM
+                                </option>
+                                <option value="13:00">
+                                  1:00 PM
+                                </option>
+                                <option value="13:30">
+                                  1:30 PM
+                                </option>
+                                <option value="14:00">
+                                  2:00 PM
+                                </option>
+                                <option value="14:30">
+                                  2:30 PM
+                                </option>
+                                <option value="15:00">
+                                  3:00 PM
+                                </option>
+                                <option value="15:30">
+                                  3:30 PM
+                                </option>
+                                <option value="16:00">
+                                  4:00 PM
+                                </option>
+                                <option value="16:30">
+                                  4:30 PM
+                                </option>
+                                <option value="17:00">
+                                  5:00 PM
+                                </option>
+                                <option value="17:30">
+                                  5:30 PM
+                                </option>
+                                <option value="18:00">
+                                  6:00 PM
+                                </option>
+                              </select>
+                            </div>
+                          </>
+                        )}
+
+                        {/* ERROR */}
                         {bookingError && (
                           <p
                             className="form-error"
@@ -789,6 +886,7 @@ Booked Time: ${formattedTime}`;
                           </p>
                         )}
 
+                        {/* CONFIRM */}
                         <button
                           type="button"
                           className="primary-button book-button"
@@ -803,7 +901,7 @@ Booked Time: ${formattedTime}`;
                         >
                           {isBooking
                             ? "SAVING..."
-                            : "CONFIRM APPOINTMENT"}
+                            : "CONFIRM MY APPOINTMENT"}
 
                           <span aria-hidden="true">
                             →
@@ -813,6 +911,7 @@ Booked Time: ${formattedTime}`;
                     )}
                   </>
                 ) : (
+                  /* BOOKING SUCCESS */
                   <div className="schedule-result">
                     <div className="success-mark">
                       ✓
@@ -893,3 +992,4 @@ Selected Time: ${formatSelectedTime(
     </>
   );
 }
+

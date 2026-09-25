@@ -105,17 +105,16 @@ const payload = {
         priority
       />
         <div className="hero-content">
-          <p className="eyebrow">FOR STUDENTS</p>
+          <p className="eyebrow">FOR STUDENTS & WORKING PROFESSIONALS</p>
 
-        <h1>Unsure Which Career Path Is Right For You?</h1>
+        <h1>Do You Have an Entrepreneurial Mindset?</h1>
 
         <p className="hero-subtitle">
-          Answer 8 simple questions and discover the type of work that naturally suits you.
+          Answer 6 simple questions and discover how naturally you think, solve problems, spot opportunities, and approach business.
         </p>
 
         <p className="hero-note">
-          No marks. No right or wrong answers. Just honest answers about what you enjoy,
-          what motivates you, and how you like to work.
+          No marks. No right or wrong answers. Just honest answers about how you think, what motivates you, and how you approach opportunities.
         </p>
 
         <button
@@ -143,7 +142,6 @@ const payload = {
         <div className="modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setIsFormOpen(false); }}>
           <section className="form-modal" role="dialog" aria-modal="true" aria-labelledby="form-title">
             <button className="close-button" onClick={() => setIsFormOpen(false)} aria-label="Close form">×</button>
-            <p className="modal-kicker">YOUR EXPORT GROWTH PLAN</p>
             <h2 id="form-title"> Enter your info below and get started. Find out which skill suits you best!</h2>
             <form onSubmit={handleSubmit}>
               <div className="form-grid">
@@ -170,7 +168,7 @@ const payload = {
               
               {error && <p className="form-error" role="alert">{error}</p>}
               <button className="primary-button submit-button" type="submit" disabled={isSubmitting}>{isSubmitting ? "SUBMITTING..." : "WATCH NOW FOR FREE"} <span aria-hidden="true">→</span></button>
-              <p className="consent-copy">By submitting this form, you agree to be contacted about your export growth plan.</p>
+              <p className="consent-copy">By submitting this form, you agree to be contacted about your career growth opportunities.</p>
             </form>
           </section>
         </div>
