@@ -427,7 +427,7 @@ Booked Time: ${formattedTime}`;
             <Image
               className="brand-mark"
               src="/logo.png"
-              alt="The Bot"
+              alt="Next Genre Vision Logo"
               width={652}
               height={652}
               priority

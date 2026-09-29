@@ -1,8 +1,8 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Privacy Policy | The Bot",
-  description: "Privacy Policy for The Bot Agency.",
+  title: "Privacy Policy | Next Genre Vision ",
+  description: "Privacy Policy for Next Genre Vision .",
 };
 
 export default function PrivacyPolicyPage() {
@@ -20,7 +20,7 @@ export default function PrivacyPolicyPage() {
         <h2>Sharing and retention</h2>
         <p>We share information only with service providers needed to operate this website, manage enquiries, communicate with you, or schedule meetings. We retain information only as long as reasonably necessary for these purposes or as required by law.</p>
         <h2>Contact</h2>
-        <p>For privacy questions or requests, contact The Bot Agency through the business contact details provided to you.</p>
+        <p>For privacy questions or requests, contact Next Genre Vision through the business contact details provided to you.</p>
         <Link className="legal-back-link" href="/">Back to the website</Link>
       </article>
     </main>

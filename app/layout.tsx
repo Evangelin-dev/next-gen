@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "The Bot | Export Growth Plan",
-  description: "Build a reliable export enquiry pipeline with The Bot.",
+  title: "Next Genre Vision | Assess Yourself",
+  
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -99,7 +99,7 @@ const payload = {
         <Image
         className="brand-mark"
         src="/logo.png"
-        alt="The Bot"
+        alt="Next Genre Vision "
         width={200}
         height={80}
         priority
