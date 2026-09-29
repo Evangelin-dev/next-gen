@@ -14,8 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Next Genre Vision | Be an Entrepreneur – Build your business in 1 year",
-  
+  title: "Next Genre Vision | Be an Entrepreneur",
+  description:
+    "Start your entrepreneurship journey with Next Genre Vision and build your business in 1 year.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
