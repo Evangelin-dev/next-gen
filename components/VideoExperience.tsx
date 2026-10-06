@@ -316,28 +316,13 @@ Booked Time: ${formattedTime}`;
     }
 
     try {
-      const eventId = crypto.randomUUID();
-
       await apiClient.patch(`/students/${studentId}/`, {
         college: selectedCollege,
         booking_date: selectedDate,
         booking_time: formattedTime,
-        event_id: eventId,
-        event_name: "Schedule",
       });
 
       setIsBookingComplete(true);
-
-      trackFacebookEvent(
-        "Schedule",
-        {
-          content_name: "Career Assessment Booking",
-          booking_date: selectedDate,
-          booking_time: formattedTime,
-          status: "booked",
-        },
-        eventId
-      );
 
       if (
         whatsappWindow &&
@@ -671,7 +656,7 @@ Booked Time: ${formattedTime}`;
                           }}
                         >
                           Choose the counselling centre
-                          you'd like to visit.
+                          you&apos;d like to visit.
                         </p>
 
                         <label
@@ -959,7 +944,7 @@ Booked Time: ${formattedTime}`;
                     </p>
 
                     <h2>
-                      You're all set!
+                      You&apos;re all set!
                     </h2>
 
                     <p className="question-hint">
