@@ -275,22 +275,13 @@ export default function VideoExperience() {
     setBookingError("");
 
     try {
-      const eventId = crypto.randomUUID();
-
       await apiClient.patch(`/students/${studentId}/`, {
         college: selectedCollege,
         booking_date: selectedDate,
         booking_time: "10:00 AM - 6:00 PM",
-        event_id: eventId,
-        event_name: "Schedule",
       });
 
       setIsBookingComplete(true);
-      trackFacebookEvent("Schedule", {
-        content_name: "Career Assessment Booking",
-        booking_date: selectedDate,
-        status: "booked",
-      }, eventId);
     } catch (error) {
       console.error("Booking failed:", error);
 
