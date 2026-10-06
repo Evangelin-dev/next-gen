@@ -1,15 +1,15 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Full Disclosure | The Bot",
-  description: "Full Disclosure for The Bot Agency.",
+  title: "Full Disclosure |Next Genre Vision ",
+  description: "Full Disclosure for Next Genre Vision .",
 };
 
 export default function FullDisclosurePage() {
   return (
     <main className="legal-page">
       <article className="legal-content">
-        <p className="modal-kicker">THEBOT</p>
+        <p className="modal-kicker">NEXT GENRE VISION</p>
         <h1>Full Disclosure</h1>
         <p className="legal-updated">Last updated: September 5, 2026</p>
         <p>thebot provides marketing and growth services for businesses. Our programs are designed to support measurable business growth, with results dependent on the quality and consistency of implementation. Outcomes may vary based on the business, market, offer, sales process, budget, timing, team participation, and execution.</p>
