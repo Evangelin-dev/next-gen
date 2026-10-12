@@ -6,28 +6,16 @@ import { FACEBOOK_PIXEL_ID } from "@/lib/facebookPixel";
 export default function MetaPixel() {
   return (
     <>
-      <Script
-        id="facebook-pixel"
-        strategy="afterInteractive"
-        src="https://connect.facebook.net/en_US/fbevents.js"
-        onLoad={() => {
-          window.fbq?.("init", FACEBOOK_PIXEL_ID);
-          window.fbq?.("track", "PageView");
-        }}
-      />
-
-      <Script id="facebook-pixel-setup" strategy="afterInteractive">
+      <Script id="facebook-pixel-base" strategy="afterInteractive">
         {`
-          window.fbq = window.fbq || function() {
-            window.fbq.callMethod
-              ? window.fbq.callMethod.apply(window.fbq, arguments)
-              : window.fbq.queue.push(arguments);
-          };
+          !function(f,b,e,v,n,t,s)
+          {if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+          t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script',
+          'https://connect.facebook.net/en_US/fbevents.js');
 
-          window.fbq.push = window.fbq;
-          window.fbq.loaded = true;
-          window.fbq.version = "2.0";
-          window.fbq.queue = [];
+          window.fbq("init", "${FACEBOOK_PIXEL_ID}");
+          window.fbq("track", "PageView");
         `}
       </Script>
 
